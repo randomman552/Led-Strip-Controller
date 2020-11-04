@@ -1,0 +1,8 @@
+{
+    "programmer": "AVR ISP",
+    "board": "arduino:avr:nano",
+    "configuration": "cpu=atmega328",
+    "sketch": "Led-Strip-Controller.ino",
+    "output": "../build",
+    "port": "COM3"
+}
