@@ -1,5 +1,5 @@
 {
-    "programmer": "AVR ISP",
+    "programmer": "AVRISP mkII",
     "board": "arduino:avr:nano",
     "configuration": "cpu=atmega328",
     "sketch": "Led-Strip-Controller.ino",

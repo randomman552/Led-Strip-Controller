@@ -1,5 +1,6 @@
 #include "Effects.h"
 
+
 /**
  * Macro to handle the various reverse conditions used within different lighting functions.
  * condition - The condition that will cause the reverse value to flip.
@@ -78,29 +79,17 @@ void Effects::CustomColor::fillEmptyMiddle()
 
     clear();
 
-    int middle = numLEDs / 2;
+    int mid = numLEDs / 2;
 
-    //Variables to store the start and length for both fill sections
-    int strt1;
-    int len1;
-    int strt2;
-    int len2;
-
-    //Determine values for start and length variables
-    if (i > middle) {
-        strt1 = i - middle;
-        len1 = middle - (i - middle);
-        strt2 = middle;
-        len2 = middle - (i - middle);
+    //Fill the led strip appropriately depending on our iteration status
+    if (i > mid) {
+        //Filling from edges
+        fill_solid(leds + i - mid, numLEDs - (i - mid) * 2, color);
     } else {
-        strt1 = 0;
-        len1 = i;
-        strt2 = numLEDs - i;
-        len2 = numLEDs - i;
+        //Emptying to middle
+        fill_solid(leds, i, color);
+        fill_solid(leds + (numLEDs - i), i, color);
     }
-
-    fill_solid(leds + strt1, len1, color);
-    fill_solid(leds + strt2, len2, color);
     
     REVERSE_HANDLER(i == numLEDs || i == 0, i, reverse);
 }

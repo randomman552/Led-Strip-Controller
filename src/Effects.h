@@ -3,8 +3,6 @@
 
 #include <Arduino.h>
 #include <FastLED.h>
-#include <ArxContainer.h>
-
 
 /**
  * Namespace containing all the Effects we can apply to the LED Strip.
