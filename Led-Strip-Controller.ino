@@ -1,12 +1,13 @@
 #include "src/Effects.h"
 #include <SoftwareSerial.h>
 #include <SerialCommands.h>
+#include <EEPROM.h>
 
 // Define LED Setup Constants
 #define DATA_PIN 9
 #define LED_TYPE WS2812B
 #define COLOR_ORDER GRB
-#define NUM_LEDS 144
+#define NUM_LEDS 153
 #define MAX_FRAME_RATE 60
 
 
@@ -49,11 +50,93 @@ char commandBuffer[32];
 SerialCommands commandHandler(&bltSerial, commandBuffer, sizeof commandBuffer);
 
 
-#pragma region Serial commands namespace and definitions
+#pragma region Memory mangement namespace
+
+//Define memory addresses to store values in EEPROM. 
+//You may wish to change these if you have written heavily to EEPROM on your arduino as it could result in inconsistent behaviour.
+//Memory address of version number, if the value stored in EEPROM differs, memory will be wiped.
+#define VERSION_ADDR 1
+//Current version number
+#define VERSION 1
+
+#define EEPROM_EFFECT_ADDR 2
+#define BRIGHTNESS_ADDR 3
+#define ENABLED_ADDR 4
+#define COLOR_ADDR 5
 
 
+/**
+ * Namespace containg memory related functions.
+ * These functions are used to manage EEPROM for persistent storage when restarting.
+ */
+namespace Memory
+{
+    //Function used to reset the EEPROM to default values
+    void reset() {
+        //First, clear any values we currently have in EEPROM
+        for (int i = 0; i < EEPROM.length(); i++)
+            EEPROM.update(i, 255);
+
+        CRGB defCol(255, 255, 255);
+
+        //Then load in some default values
+        EEPROM.update(EEPROM_EFFECT_ADDR, 0);
+        EEPROM.update(BRIGHTNESS_ADDR, 64);
+        EEPROM.update(ENABLED_ADDR, 1);
+        EEPROM.put<CRGB>(COLOR_ADDR, defCol);
+
+        //Set current version number
+        EEPROM.update(VERSION_ADDR, VERSION);
+    }
+
+    //Loads the values from EEPROM into memory
+    void load() {
+        curEffect = EEPROM.read(EEPROM_EFFECT_ADDR);
+        enabled = EEPROM.read(ENABLED_ADDR);
+        FastLED.setBrightness(EEPROM.read(BRIGHTNESS_ADDR));
+        EEPROM.get<CRGB>(COLOR_ADDR, Effects::color);
+    }
+
+    //Updates EEPROM with changed values
+    void save() {
+        EEPROM.update(EEPROM_EFFECT_ADDR, curEffect);
+        EEPROM.update(BRIGHTNESS_ADDR, FastLED.getBrightness());
+        EEPROM.update(ENABLED_ADDR, enabled);
+        EEPROM.put<CRGB>(COLOR_ADDR, Effects::color);
+    }
+
+    //Function to initalise EEPROM for our use
+    void setup() {
+        // If version is not consistent, then we call reset
+        if (EEPROM.read(VERSION_ADDR) != VERSION)
+            reset();
+        load();
+    }
+} // namespace Memory
+
+
+//Undefine our memory addresses as they are no longer required.
+#undef VERSION_ADDR
+#undef VERSION
+#undef BRIGHTNESS_ADDR
+#undef ENABLED_ADDR
+#undef COLOR_ADDR
+
+
+#pragma endregion
+
+
+#pragma region Commands namespace
+
+
+/**
+ * Namespace containing serial commands related functions and objects.
+ */
 namespace Commands
 {
+    /**
+     * Namespace containing serial command functions
+     */
     namespace funcs
     {
         /**
@@ -82,7 +165,8 @@ namespace Commands
             }
             curEffect = newVal - 1;
             sender->GetSerial()->println("OK");
-            return;
+
+            Memory::save();
         }
 
         //Toggle whether the led strip is enabled or disabled
@@ -90,6 +174,7 @@ namespace Commands
         {
             enabled = !enabled;
             sender->GetSerial()->println("OK");
+            Memory::save();
         }
 
         //Change the current custom color
@@ -112,6 +197,7 @@ namespace Commands
             Effects::color = newCol;
 
             sender->GetSerial()->println("OK");
+            Memory::save();
         }
 
         //Change current brightness
@@ -127,9 +213,13 @@ namespace Commands
             }
             FastLED.setBrightness(newVal);
             sender->GetSerial()->println("OK");
+            Memory::save();
         }
     } // namespace Funcs
 
+    /**
+     * Namespace containing serial commands objects.
+     */
     namespace cmds
     {
         SerialCommand effect("f", funcs::effect);
@@ -167,6 +257,9 @@ void setup() {
     FastLED.setMaxRefreshRate(MAX_FRAME_RATE);
 
     Commands::setup();
+
+    Memory::setup();
+    Memory::load();
     
     Serial.println("Setup Complete!");
 }
