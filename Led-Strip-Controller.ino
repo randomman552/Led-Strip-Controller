@@ -59,7 +59,7 @@ SerialCommands commandHandler(&bltSerial, commandBuffer, sizeof commandBuffer);
 //Current version number
 #define VERSION 1
 
-#define EEPROM_EFFECT_ADDR 2
+#define EFFECT_ADDR 2
 #define BRIGHTNESS_ADDR 3
 #define ENABLED_ADDR 4
 #define COLOR_ADDR 5
@@ -80,7 +80,7 @@ namespace Memory
         CRGB defCol(255, 255, 255);
 
         //Then load in some default values
-        EEPROM.update(EEPROM_EFFECT_ADDR, 0);
+        EEPROM.update(EFFECT_ADDR, 0);
         EEPROM.update(BRIGHTNESS_ADDR, 64);
         EEPROM.update(ENABLED_ADDR, 1);
         EEPROM.put<CRGB>(COLOR_ADDR, defCol);
@@ -91,7 +91,7 @@ namespace Memory
 
     //Loads the values from EEPROM into memory
     void load() {
-        curEffect = EEPROM.read(EEPROM_EFFECT_ADDR);
+        curEffect = EEPROM.read(EFFECT_ADDR);
         enabled = EEPROM.read(ENABLED_ADDR);
         FastLED.setBrightness(EEPROM.read(BRIGHTNESS_ADDR));
         EEPROM.get<CRGB>(COLOR_ADDR, Effects::color);
@@ -99,7 +99,7 @@ namespace Memory
 
     //Updates EEPROM with changed values
     void save() {
-        EEPROM.update(EEPROM_EFFECT_ADDR, curEffect);
+        EEPROM.update(EFFECT_ADDR, curEffect);
         EEPROM.update(BRIGHTNESS_ADDR, FastLED.getBrightness());
         EEPROM.update(ENABLED_ADDR, enabled);
         EEPROM.put<CRGB>(COLOR_ADDR, Effects::color);
