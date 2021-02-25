@@ -172,7 +172,12 @@ void commandFuncs::editColor(SerialCommands *sender)
     // Get color at specified idx
     int idx = Controller::getInstance()->getCurColIdx();
     if (strlen(idxInp) != 0) {
-        idx = clamp(atoi(idxInp), 0, MAX_COLORS - 1);
+        idx = atoi(idxInp);
+        if (idx < 0 || idx >= MAX_COLORS) {
+            sender->GetSerial()->print("ERROR: Index must be in range 0 - ");
+            sender->GetSerial()->println(MAX_COLORS - 1);
+            return;
+        }
     }
     CRGB col = Controller::getInstance()->getColor(idx);
 
@@ -197,7 +202,13 @@ void commandFuncs::getColor(SerialCommands *sender)
 
     int idx = Controller::getInstance()->getCurColIdx();
     if (strlen(idxInp) != 0) {
-        idx = clamp(atoi(idxInp), 0, MAX_COLORS - 1);
+        idx = atoi(idxInp);
+        // Check if index is within range
+        if (idx < 0 || idx >= MAX_COLORS) {
+            sender->GetSerial()->print("ERROR: Index must be in range 0 - ");
+            sender->GetSerial()->println(MAX_COLORS - 1);
+            return;
+        }
     }
     CRGB curCol = Controller::getInstance()->getColor(idx);
 
@@ -221,7 +232,7 @@ void commandFuncs::switchColor(SerialCommands *sender)
 
     // Check given value in range
     if (newVal < 0 || newVal >= MAX_COLORS) {
-        sender->GetSerial()->print("ERROR: Value must be in range 0 - ");
+        sender->GetSerial()->print("ERROR: Index must be in range 0 - ");
         sender->GetSerial()->println(MAX_COLORS - 1);
         return;
     }
