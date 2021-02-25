@@ -24,12 +24,22 @@ static void (*lFuncs[])(Controller&) = {
     Effects::Rainbow::spinCycle
 };
 
+// Initalise _instance to be a null pointer
+Controller *Controller::_instance = nullptr;
+
 #pragma region Constructors
 
 Controller::Controller(int rx, int tx):
     _serial(rx, tx),
     _commandHandler(&_serial, _commandBuffer, sizeof _commandBuffer)
 {
+    // If singleton instance has already been created, use that
+    if (_instance) {
+        Controller(*_instance);
+        return;
+    }
+
+    // Check for EEPROM version mismatch
     if (EEPROM.read(ADDR_VERSION) != VERSION) {
         CRGB color(255, 255, 255);
 
@@ -46,9 +56,8 @@ Controller::Controller(int rx, int tx):
     _commandHandler.AddCommand(new SerialCommand("b", commandFuncs::brightness));
     _commandHandler.AddCommand(new SerialCommand("t", commandFuncs::toggle));
 
-    // Set instance of controller for SerialCommands instance to reference for values
-    // TODO: Replace this with singleton pattern?
-    controller = this;
+    // Set singleton instance
+    _instance = this;
 
     // Start software serial
     _serial.begin(38400);
@@ -120,7 +129,7 @@ void commandFuncs::brightness(SerialCommands *sender)
         sender->GetSerial()->println(FastLED.getBrightness());
         return;
     }
-    controller->setBrightness(newVal);
+    Controller::getInstance()->setBrightness(newVal);
     sender->GetSerial()->println("OK");
 }
 
@@ -129,7 +138,7 @@ void commandFuncs::color(SerialCommands *sender)
     char *rInp = sender->Next();
     char *gInp = sender->Next();
     char *bInp = sender->Next();
-    CRGB curCol = controller->getColor();
+    CRGB curCol = Controller::getInstance()->getColor();
 
     // Check for no input
     if (strlen(rInp) == 0 || strlen(gInp) == 0 || strlen(bInp) == 0) {
@@ -142,7 +151,7 @@ void commandFuncs::color(SerialCommands *sender)
     }
 
     CRGB newCol(atoi(rInp), atoi(gInp), atoi(bInp));
-    controller->setColor(newCol);
+    Controller::getInstance()->setColor(newCol);
 
     sender->GetSerial()->println("OK");
 }
@@ -154,16 +163,16 @@ void commandFuncs::effect(SerialCommands *sender)
 
     // If new value is null or out of bounds, report current value
     if (strlen(input) == 0 || !(newVal <= sizeof(lFuncs) / sizeof (lFuncs[0]) && newVal > 0)){
-        sender->GetSerial()->println(controller->getEffect() + 1);
+        sender->GetSerial()->println(Controller::getInstance()->getEffect() + 1);
         return;
     }
-    controller->setEffect(newVal - 1);
+    Controller::getInstance()->setEffect(newVal);
     sender->GetSerial()->println("OK");
 }
 
 void commandFuncs::toggle(SerialCommands *sender)
 {
-    controller->setEnabled(!controller->getEnabled());
+    Controller::getInstance()->setEnabled(!Controller::getInstance()->getEnabled());
     sender->GetSerial()->println("OK");
 }
 

@@ -14,8 +14,6 @@ class Controller;
  */
 namespace
 {
-    Controller *controller;
-
     namespace commandFuncs
     {
         /**
@@ -50,6 +48,11 @@ namespace
 }; // namespace
 
 
+/**
+ * Singleton Controller class
+ * Handles controlling of an LED strip, and recieves commands on the defined RX and TX channels
+ * Call Controller::getInstance() to get the controller instance if already created, otherwise use the constructor
+ */
 class Controller
 {
 private:
@@ -58,8 +61,8 @@ private:
     char _commandBuffer[32];
     SoftwareSerial _serial;
     SerialCommands _commandHandler;
+    static Controller *_instance;
 public:
-    // Constructors
     Controller(int rx, int tx);
     ~Controller();
 
@@ -77,6 +80,11 @@ public:
     uint8_t getBrightness();
     bool getEnabled();
     CRGB getColor();
+
+    // Get controller instance
+    static Controller *getInstance() {
+        return _instance;
+    };
 
     /**
      * Main loop method of controller
