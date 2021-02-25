@@ -32,12 +32,24 @@ namespace
          * Form: "toggle"
          */
         void toggle(SerialCommands *sender);
+
+        /**
+         * Color getting command handler
+         * Form: "getColor <idx(0-MAX_COLORS)>"
+         */
+        void getColor(SerialCommands *sender);
         
         /**
-         * Color command handler
-         * Form: "color <red(0-255)> <green(0-255)> <blue(0-255)>"
+         * Color editing command handler
+         * Form: "editColor <red(0-255)> <green(0-255)> <blue(0-255)> <Optional:idx(0-MAX_COLORS-1)> "
          */
-        void color(SerialCommands *sender);
+        void editColor(SerialCommands *sender);
+
+        /**
+         * Color switching command handler
+         * Form: switchColor <idx(0-MAX_COLORS)>
+         */
+        void switchColor(SerialCommands *sender);
 
         /**
          * Brightness command handler
@@ -72,6 +84,8 @@ public:
     void setBrightness(uint8_t val);
     void setEnabled(bool val);
     void setColor(CRGB val);
+    void setColor(CRGB val, int idx);
+    void setCurColIdx(uint8_t val);
 
     // Getters
     CRGB* getLEDs();
@@ -80,6 +94,8 @@ public:
     uint8_t getBrightness();
     bool getEnabled();
     CRGB getColor();
+    CRGB getColor(int idx);
+    uint8_t getCurColIdx();
 
     // Get controller instance
     static Controller *getInstance() {
