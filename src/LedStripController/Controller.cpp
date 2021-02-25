@@ -67,6 +67,9 @@ Controller::Controller(int rx, int tx):
     _commandHandler.AddCommand(new SerialCommand("gc", commandFuncs::getColor));
     _commandHandler.AddCommand(new SerialCommand("ec", commandFuncs::editColor));
     _commandHandler.AddCommand(new SerialCommand("sc", commandFuncs::switchColor));
+    // Help is aliased to "?" and "help"
+    _commandHandler.AddCommand(new SerialCommand("?", commandFuncs::help));
+    _commandHandler.AddCommand(new SerialCommand("help", commandFuncs::help));
 
     // Set singleton instance
     _instance = this;
@@ -260,6 +263,11 @@ void commandFuncs::toggle(SerialCommands *sender)
 {
     Controller::getInstance()->setEnabled(!Controller::getInstance()->getEnabled());
     sender->GetSerial()->println("OK");
+}
+
+void commandFuncs::help(SerialCommands *sender) 
+{
+    sender->GetSerial()->println("https://github.com/randomman552/Led-Strip-Controller");
 }
 
 #pragma endregion

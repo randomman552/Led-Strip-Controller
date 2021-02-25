@@ -56,6 +56,13 @@ namespace
          * Form: "brightness <value(0-255)>"
          */
         void brightness(SerialCommands *sender);
+        
+        /**
+         * Function to print out re-direct to GitHub repo, where a list of commands is provided in README.md
+         * I have done this instead of adding onboard help in an attempt to reduce memory consumption.
+         * I may later add onboard help using PROGMEM to use program storage space
+         */
+        void help(SerialCommands *sender);
     } // namespace commandFuncs
 }; // namespace
 
