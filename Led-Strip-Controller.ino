@@ -13,7 +13,6 @@ Controller ledController(BLT_RX, BLT_TX);
 
 void setup()
 {
-    Serial.begin(9600);
     FastLED.addLeds<LED_TYPE, DATA_PIN, COLOR_ORDER>(leds, NUM_LEDS);
     ledController.setLEDs(leds, NUM_LEDS);
 }

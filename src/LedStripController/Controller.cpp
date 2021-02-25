@@ -162,8 +162,8 @@ void commandFuncs::effect(SerialCommands *sender)
     int newVal = atoi(input);
 
     // If new value is null or out of bounds, report current value
-    if (strlen(input) == 0 || !(newVal <= sizeof(lFuncs) / sizeof (lFuncs[0]) && newVal > 0)){
-        sender->GetSerial()->println(Controller::getInstance()->getEffect() + 1);
+    if (strlen(input) == 0 || !(newVal <= sizeof(lFuncs) / sizeof (lFuncs[0]) && newVal >= 0)){
+        sender->GetSerial()->println(Controller::getInstance()->getEffect());
         return;
     }
     Controller::getInstance()->setEffect(newVal);
