@@ -5,6 +5,15 @@
 
 #include "../Controller.h"
 
+/**
+ * Clamp helper function.
+ * Clamps given integer to be within the given range (inclusive)
+ * i - Variable to clamp
+ * max - Maximum value
+ * min - Minimum value
+ */
+int clamp(int val, int min, int max);
+
 
 /**
  * Namespace containing lighting functions
@@ -18,13 +27,6 @@ namespace Effects
     static bool reverse = false;
 
     void clear(Controller &C);
-    /**
-     * Clamp the given variable to be within the given range
-     * i - Variable to clamp
-     * max - Maximum value
-     * min - Minimum value
-     */
-    int clamp(int val, int max, int min);
 
     /**
      * Lighting functions using custom color

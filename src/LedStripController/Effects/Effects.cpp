@@ -6,7 +6,7 @@ void Effects::clear(Controller &C)
     fill_solid(C.getLEDs(), C.getNumLEDs(), col);
 }
 
-int Effects::clamp(int val, int max, int min)
+int clamp(int val, int min, int max)
 {
     if (val > max) return max;
     else if (val < min) return min;
@@ -23,7 +23,7 @@ void Effects::Color::fill(Controller &C)
 void Effects::Color::fade(Controller &C)
 {
     // Ensure i is within range
-    i = clamp(i, 255, 0);
+    i = clamp(i, 0, 255);
 
     CRGB color = C.getColor();
 
@@ -41,7 +41,7 @@ void Effects::Color::fade(Controller &C)
 
 void Effects::Color::fillEmpty(Controller &C)
 {
-    i = clamp(i, C.getNumLEDs() * 2, 0);
+    i = clamp(i, 0, C.getNumLEDs() * 2);
     clear(C);
 
     int start;
@@ -63,7 +63,7 @@ void Effects::Color::fillEmpty(Controller &C)
 
 void Effects::Color::fillEmptyMiddle(Controller &C)
 {
-    i = clamp(i, C.getNumLEDs(), 0);
+    i = clamp(i, 0, C.getNumLEDs());
     clear(C);
 
     int mid = C.getNumLEDs() / 2;
@@ -93,7 +93,7 @@ void Effects::Rainbow::fill(Controller &C)
 
 void Effects::Rainbow::fillEmpty(Controller &C)
 {
-    i = clamp(i, C.getNumLEDs() * 2, 0);
+    i = clamp(i, 0, C.getNumLEDs() * 2);
     clear(C);
 
     int start;

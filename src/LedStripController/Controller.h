@@ -32,18 +32,37 @@ namespace
          * Form: "toggle"
          */
         void toggle(SerialCommands *sender);
+
+        /**
+         * Color getting command handler
+         * Form: "getColor <idx(0-MAX_COLORS)>"
+         */
+        void getColor(SerialCommands *sender);
         
         /**
-         * Color command handler
-         * Form: "color <red(0-255)> <green(0-255)> <blue(0-255)>"
+         * Color editing command handler
+         * Form: "editColor <red(0-255)> <green(0-255)> <blue(0-255)> <Optional:idx(0-MAX_COLORS-1)> "
          */
-        void color(SerialCommands *sender);
+        void editColor(SerialCommands *sender);
+
+        /**
+         * Color switching command handler
+         * Form: switchColor <idx(0-MAX_COLORS)>
+         */
+        void switchColor(SerialCommands *sender);
 
         /**
          * Brightness command handler
          * Form: "brightness <value(0-255)>"
          */
         void brightness(SerialCommands *sender);
+        
+        /**
+         * Function to print out re-direct to GitHub repo, where a list of commands is provided in README.md
+         * I have done this instead of adding onboard help in an attempt to reduce memory consumption.
+         * I may later add onboard help using PROGMEM to use program storage space
+         */
+        void help(SerialCommands *sender);
     } // namespace commandFuncs
 }; // namespace
 
@@ -72,6 +91,8 @@ public:
     void setBrightness(uint8_t val);
     void setEnabled(bool val);
     void setColor(CRGB val);
+    void setColor(CRGB val, int idx);
+    void setCurColIdx(uint8_t val);
 
     // Getters
     CRGB* getLEDs();
@@ -80,6 +101,8 @@ public:
     uint8_t getBrightness();
     bool getEnabled();
     CRGB getColor();
+    CRGB getColor(int idx);
+    uint8_t getCurColIdx();
 
     // Get controller instance
     static Controller *getInstance() {
