@@ -16,8 +16,17 @@ int clamp(int val, int min, int max)
 #pragma region Custom color lighting functions
 
 void Effects::Color::fill(Controller &C)
-{
+{   
+    i = clamp(i, 0, 255);
     fill_solid(C.getLEDs(), C.getNumLEDs(), C.getColor());
+    
+    // Advance color after set duration (255 frames)
+    if (i == 255) {
+        i = 0;
+        C.advanceColor();
+    }
+    
+    i++;
 }
 
 void Effects::Color::fade(Controller &C)
@@ -35,8 +44,15 @@ void Effects::Color::fade(Controller &C)
     
     // Iterate i depending on reverse boolean
     if (reverse) i--; else i++;
+
     // If i has reached a limit, invert reverse and clamp i
-    if (i == 255 || i == 0) reverse = !reverse;
+    // Advance to the next color if we have faded out
+    if (i == 255) { 
+        reverse = !reverse;
+    } else if (i == 0) {
+        reverse = !reverse;
+        C.advanceColor();
+    }
 }
 
 void Effects::Color::fillEmpty(Controller &C)
@@ -58,7 +74,11 @@ void Effects::Color::fillEmpty(Controller &C)
     fill_solid(C.getLEDs() + start, length, C.getColor());
 
     if (reverse) i--; else i++;
-    if (i == C.getNumLEDs() * 2 || i == 0) reverse = !reverse;
+    if (i == C.getNumLEDs() * 2 || i == 0) {
+        reverse = !reverse;
+        // Advance color when reaching end of strip
+        C.advanceColor();
+    }
 }
 
 void Effects::Color::fillEmptyMiddle(Controller &C)
@@ -79,7 +99,10 @@ void Effects::Color::fillEmptyMiddle(Controller &C)
     }
     
     if (reverse) i--; else i++;
-    if (i == C.getNumLEDs() || i == 0) reverse = !reverse;
+    if (i == C.getNumLEDs() || i == 0) { 
+        reverse = !reverse;
+        C.advanceColor();
+    }
 }
 
 #pragma endregion

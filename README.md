@@ -50,5 +50,10 @@ The following commands can be sent over the specified serial channels to customi
 - `b <value(0-255)>` - Set the brightness of the strip
 - `f <value>` - Set current lighting effect
 - `gc <index>` - Get the colour at the given index, if none provided get the current colour
-- `ec <r(0-255)> <g(0-255)> <b(0-255)> <index>` - Set the colour at the given index, if none provided set current colour
+- `c <r(0-255)> <g(0-255)> <b(0-255)> <index>` - Set the colour at the given index, if none provided set current colour
 - `sc <index>` - Set the current active colour to the index specified
+- `fc <index>` - Set final acitve color index
+
+Color will be cycled between the value set with sc and fc.\
+For example if color0 is red, color1 is green, and color2 is blue:\ 
+sc would be set to 0, and fc would be set to 2. Colours would then cycle between these 3

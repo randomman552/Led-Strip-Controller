@@ -1,14 +1,15 @@
 #include "./Controller.h"
 
+#define VERSION 3
+#define MAX_COLORS 8
+
 #define ADDR_VERSION 1
 #define ADDR_EFFECT 2
 #define ADDR_BRIGHTNESS 3
 #define ADDR_ENABLED 4
 #define ADDR_CURRENT_COLOR_IDX 5
-#define ADDR_COLOR 6
-
-#define VERSION 2
-#define MAX_COLORS 8
+#define ADDR_FINAL_COLOR_IDX 6
+#define ADDR_COLORS (6 + sizeof(unsigned int))
 
 
 /**
@@ -50,6 +51,7 @@ Controller::Controller(int rx, int tx):
         setBrightness(64);
         setEnabled(true);
         setCurColIdx(0);
+        setFinColIdx(0);
         EEPROM.update(ADDR_VERSION, VERSION);
 
         // Default all colors to white
@@ -65,14 +67,18 @@ Controller::Controller(int rx, int tx):
     _commandHandler.AddCommand(new SerialCommand("b", commandFuncs::brightness));
     _commandHandler.AddCommand(new SerialCommand("f", commandFuncs::effect));
     _commandHandler.AddCommand(new SerialCommand("gc", commandFuncs::getColor));
-    _commandHandler.AddCommand(new SerialCommand("ec", commandFuncs::editColor));
+    _commandHandler.AddCommand(new SerialCommand("c", commandFuncs::editColor));
     _commandHandler.AddCommand(new SerialCommand("sc", commandFuncs::switchColor));
+    _commandHandler.AddCommand(new SerialCommand("fc", commandFuncs::finalColor));
     // Help is aliased to "?" and "help"
     _commandHandler.AddCommand(new SerialCommand("?", commandFuncs::help));
     _commandHandler.AddCommand(new SerialCommand("help", commandFuncs::help));
 
     // Set singleton instance
     _instance = this;
+
+    // Initalise color index offset
+    _colOffset = 0;
 
     // Start software serial
     _serial.begin(38400);
@@ -92,41 +98,60 @@ Controller::~Controller()
 
 //TODO Add better value validity checkers
 void Controller::setLEDs(CRGB *leds, int numLEDs) { _leds = leds; _numLEDs = numLEDs; }
+
 void Controller::setBrightness(uint8_t val) { EEPROM.update(ADDR_BRIGHTNESS, val); FastLED.setBrightness(val); }
+
 void Controller::setEffect(uint8_t val) { EEPROM.update(ADDR_EFFECT, val); }
+
 void Controller::setEnabled(bool val) { EEPROM.update(ADDR_ENABLED, val); }
+
 void Controller::setColor(CRGB val) { setColor(val, getCurColIdx()); }
+
 void Controller::setColor(CRGB val, int idx) {
     if (idx < 0) idx = 0;
     if (idx > MAX_COLORS) idx = MAX_COLORS - 1;
-    idx = ADDR_COLOR + idx * sizeof(CRGB);
+    idx = ADDR_COLORS + idx * sizeof(CRGB);
     EEPROM.put<CRGB>(idx, val);
 }
-void Controller::setCurColIdx(uint8_t val) { EEPROM.write(ADDR_CURRENT_COLOR_IDX, val); }
+
+void Controller::setCurColIdx(uint8_t val) { EEPROM.update(ADDR_CURRENT_COLOR_IDX, val); }
+
+void Controller::setFinColIdx(uint8_t val) { EEPROM.update(ADDR_FINAL_COLOR_IDX, val); }
 
 #pragma endregion
 
 #pragma region Getters
 
 CRGB* Controller::getLEDs() { return _leds; }
+
 int Controller::getNumLEDs() { return _numLEDs; }
+
 uint8_t Controller::getBrightness() { return EEPROM.read(ADDR_BRIGHTNESS); }
+
 uint8_t Controller::getEffect() { return EEPROM.read(ADDR_EFFECT); }
+
 bool Controller::getEnabled() { return EEPROM.read(ADDR_ENABLED); }
-CRGB Controller::getColor() { return getColor(getCurColIdx()); }
+
+CRGB Controller::getColor() { 
+    return getColor(getCurColIdx() + _colOffset);
+}
+
 CRGB Controller::getColor(int idx) {
     CRGB color;
     if (idx < 0) idx = 0;
     if (idx > MAX_COLORS) idx = MAX_COLORS - 1;
-    idx = ADDR_COLOR + idx * sizeof(CRGB);
+    idx = ADDR_COLORS + idx * sizeof(CRGB);
     EEPROM.get<CRGB>(idx, color);
     return color;
 }
+
 uint8_t Controller::getCurColIdx() { return EEPROM.read(ADDR_CURRENT_COLOR_IDX); }
+
+uint8_t Controller::getFinColIdx() { return EEPROM.read(ADDR_FINAL_COLOR_IDX); }
 
 #pragma endregion
 
-#pragma region Frame drawing
+#pragma region Interaction functions
 
 void Controller::mainloop() 
 {
@@ -138,6 +163,12 @@ void Controller::mainloop()
         Effects::clear(*this);
     }
     FastLED.show();
+}
+
+void Controller::advanceColor() {
+    _colOffset++;
+    // Wrap around handling
+    _colOffset = (_colOffset > getFinColIdx()) ? 0 : _colOffset;
 }
 
 #pragma endregion
@@ -242,6 +273,8 @@ void commandFuncs::switchColor(SerialCommands *sender)
 
     // Update value
     Controller::getInstance()->setCurColIdx(newVal);
+    // Reset current offset to prevent any out of range errors
+    Controller::getInstance()->setOffset(0);
     sender->GetSerial()->println("OK");
 }
 
@@ -251,7 +284,7 @@ void commandFuncs::effect(SerialCommands *sender)
     int newVal = atoi(input);
 
     // If new value is null or out of bounds, report current value
-    if (strlen(input) == 0 || !(newVal <= sizeof(lFuncs) / sizeof (lFuncs[0]) && newVal >= 0)){
+    if (strlen(input) == 0 || !(newVal <= sizeof(lFuncs) / sizeof (lFuncs[0]) && newVal >= 0)) {
         sender->GetSerial()->println(Controller::getInstance()->getEffect());
         return;
     }
@@ -268,6 +301,25 @@ void commandFuncs::toggle(SerialCommands *sender)
 void commandFuncs::help(SerialCommands *sender) 
 {
     sender->GetSerial()->println("https://github.com/randomman552/Led-Strip-Controller");
+}
+
+void commandFuncs::finalColor(SerialCommands *sender)
+{
+    char *input = sender->Next();
+    int newVal = atoi(input);
+
+    if (strlen(input) == 0) {
+        sender->GetSerial()->println(Controller::getInstance()->getFinColIdx());
+        return;
+    }
+
+    if (newVal < 0 || newVal >= MAX_COLORS) {
+        sender->GetSerial()->print("ERROR: Index must be in range 0 - ");
+        sender->GetSerial()->println(MAX_COLORS - 1);
+        return;
+    }
+    Controller::getInstance()->setFinColIdx(newVal);
+    sender->GetSerial()->println("OK");
 }
 
 #pragma endregion
