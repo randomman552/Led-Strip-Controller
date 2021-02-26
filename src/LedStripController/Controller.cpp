@@ -11,6 +11,8 @@
 #define ADDR_FINAL_COLOR_IDX 6
 #define ADDR_COLORS (6 + sizeof(unsigned int))
 
+#define arrayLength(array) sizeof(array) / sizeof(array[0])
+
 
 /**
  * Array of lighting function pointers
@@ -96,27 +98,36 @@ Controller::~Controller()
 
 #pragma region Setters
 
-//TODO Add better value validity checkers
 void Controller::setLEDs(CRGB *leds, int numLEDs) { _leds = leds; _numLEDs = numLEDs; }
 
 void Controller::setBrightness(uint8_t val) { EEPROM.update(ADDR_BRIGHTNESS, val); FastLED.setBrightness(val); }
 
-void Controller::setEffect(uint8_t val) { EEPROM.update(ADDR_EFFECT, val); }
+void Controller::setEffect(uint8_t val) { EEPROM.update(ADDR_EFFECT, clamp(val, 0, arrayLength(lFuncs))); }
 
 void Controller::setEnabled(bool val) { EEPROM.update(ADDR_ENABLED, val); }
 
 void Controller::setColor(CRGB val) { setColor(val, getCurColIdx()); }
 
 void Controller::setColor(CRGB val, int idx) {
-    if (idx < 0) idx = 0;
-    if (idx > MAX_COLORS) idx = MAX_COLORS - 1;
+    clamp(idx, 0, MAX_COLORS - 1);
     idx = ADDR_COLORS + idx * sizeof(CRGB);
     EEPROM.put<CRGB>(idx, val);
 }
 
-void Controller::setCurColIdx(uint8_t val) { EEPROM.update(ADDR_CURRENT_COLOR_IDX, val); }
+void Controller::setCurColIdx(uint8_t val) { 
+    val = clamp(val, 0, getFinColIdx());
+    EEPROM.update(ADDR_CURRENT_COLOR_IDX, val);
+}
 
-void Controller::setFinColIdx(uint8_t val) { EEPROM.update(ADDR_FINAL_COLOR_IDX, val); }
+void Controller::setFinColIdx(uint8_t val) {
+    val = clamp(val, getCurColIdx(), MAX_COLORS - 1);
+    EEPROM.update(ADDR_FINAL_COLOR_IDX, val); 
+}
+
+void Controller::setOffset(int val) {
+    val = clamp(val, 0, getFinColIdx());
+    _colOffset = val;
+}
 
 #pragma endregion
 
