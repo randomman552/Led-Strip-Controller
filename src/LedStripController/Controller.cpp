@@ -118,9 +118,7 @@ void Controller::setColor(CRGB val, int idx) {
 
 void Controller::setCurColIdx(uint8_t val) { 
     val = clamp(val, 0, MAX_COLORS);
-    if (val > getFinColIdx()) {
-        setFinColIdx(val + getFinColIdx());
-    }
+    setFinColIdx(val + getFinColIdx());
     EEPROM.update(ADDR_CURRENT_COLOR_IDX, val);
 }
 
