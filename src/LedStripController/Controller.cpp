@@ -65,13 +65,15 @@ Controller::Controller(int rx, int tx):
 
     // Setup command handler
     _commandHandler.SetDefaultHandler(commandFuncs::unrecognised);
+
+    _commandHandler.AddCommand(new SerialCommand("toggle", commandFuncs::toggle));
     _commandHandler.AddCommand(new SerialCommand("t", commandFuncs::toggle));
-    _commandHandler.AddCommand(new SerialCommand("b", commandFuncs::brightness));
-    _commandHandler.AddCommand(new SerialCommand("f", commandFuncs::effect));
-    _commandHandler.AddCommand(new SerialCommand("gc", commandFuncs::getColor));
-    _commandHandler.AddCommand(new SerialCommand("c", commandFuncs::editColor));
-    _commandHandler.AddCommand(new SerialCommand("sc", commandFuncs::switchColor));
-    _commandHandler.AddCommand(new SerialCommand("fc", commandFuncs::finalColor));
+    _commandHandler.AddCommand(new SerialCommand("bright", commandFuncs::brightness));
+    _commandHandler.AddCommand(new SerialCommand("effect", commandFuncs::effect));
+    _commandHandler.AddCommand(new SerialCommand("getcol", commandFuncs::getColor));
+    _commandHandler.AddCommand(new SerialCommand("col", commandFuncs::editColor));
+    _commandHandler.AddCommand(new SerialCommand("setcol", commandFuncs::switchColor));
+    _commandHandler.AddCommand(new SerialCommand("finalcol", commandFuncs::finalColor));
     // Help is aliased to "?" and "help"
     _commandHandler.AddCommand(new SerialCommand("?", commandFuncs::help));
     _commandHandler.AddCommand(new SerialCommand("help", commandFuncs::help));
@@ -115,7 +117,10 @@ void Controller::setColor(CRGB val, int idx) {
 }
 
 void Controller::setCurColIdx(uint8_t val) { 
-    val = clamp(val, 0, getFinColIdx());
+    val = clamp(val, 0, MAX_COLORS);
+    if (val > getFinColIdx()) {
+        setFinColIdx(val + getFinColIdx());
+    }
     EEPROM.update(ADDR_CURRENT_COLOR_IDX, val);
 }
 
@@ -295,7 +300,7 @@ void commandFuncs::effect(SerialCommands *sender)
     int newVal = atoi(input);
 
     // If new value is null or out of bounds, report current value
-    if (strlen(input) == 0 || !(newVal <= sizeof(lFuncs) / sizeof (lFuncs[0]) && newVal >= 0)) {
+    if (strlen(input) == 0 || !(newVal <= arrayLength(lFuncs)) && newVal >= 0) {
         sender->GetSerial()->println(Controller::getInstance()->getEffect());
         return;
     }
@@ -330,6 +335,7 @@ void commandFuncs::finalColor(SerialCommands *sender)
         return;
     }
     Controller::getInstance()->setFinColIdx(newVal);
+    Controller::getInstance()->setOffset(0);
     sender->GetSerial()->println("OK");
 }
 
