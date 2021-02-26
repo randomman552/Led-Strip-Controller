@@ -9,7 +9,7 @@
 #define ADDR_ENABLED 4
 #define ADDR_CURRENT_COLOR_IDX 5
 #define ADDR_FINAL_COLOR_IDX 6
-#define ADDR_COLORS (6 + sizeof(unsigned int))
+#define ADDR_COLORS 7
 
 #define arrayLength(array) sizeof(array) / sizeof(array[0])
 
@@ -20,6 +20,7 @@
  */
 static void (*lFuncs[])(Controller&) = {
     Effects::Color::fill,
+    Effects::Color::alternateFill,
     Effects::Color::fade,
     Effects::Color::fillEmpty,
     Effects::Color::fillEmptyMiddle,
@@ -76,7 +77,7 @@ Controller::Controller(int rx, int tx):
     _commandHandler.AddCommand(new SerialCommand("effect", commandFuncs::effect));
     _commandHandler.AddCommand(new SerialCommand("getcol", commandFuncs::getColor));
     _commandHandler.AddCommand(new SerialCommand("col", commandFuncs::editColor));
-    _commandHandler.AddCommand(new SerialCommand("setcol", commandFuncs::switchColor));
+    _commandHandler.AddCommand(new SerialCommand("curcol", commandFuncs::switchColor));
     _commandHandler.AddCommand(new SerialCommand("finalcol", commandFuncs::finalColor));
     // Help is aliased to "?" and "help"
     _commandHandler.AddCommand(new SerialCommand("?", commandFuncs::help));
@@ -161,6 +162,10 @@ CRGB Controller::getColor(int idx) {
     idx = ADDR_COLORS + idx * sizeof(CRGB);
     EEPROM.get<CRGB>(idx, color);
     return color;
+}
+
+int Controller::getOffset() {
+    return _colOffset;
 }
 
 uint8_t Controller::getCurColIdx() { return EEPROM.read(ADDR_CURRENT_COLOR_IDX); }

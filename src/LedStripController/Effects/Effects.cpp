@@ -130,6 +130,32 @@ void Effects::Color::fill(Controller &C)
     i++;
 }
 
+void Effects::Color::alternateFill(Controller &C)
+{
+    int start = C.getCurColIdx();
+    int numCols = C.getFinColIdx() + 1 - start;
+    CRGB *leds = C.getLEDs();
+    int numLEDs = C.getNumLEDs();
+    int offset = C.getOffset();
+
+    for (int i = 0; i < numLEDs; i++)
+    {
+        // Math to work out color alternations
+        // Modulo operators keep valus within numCols range
+        // Offset gives the appearance of moving the colors down the led strip 
+        // (it is incremented when C.advanceColor is called)
+        // Start is the offset to the start of active colors in colors array
+        leds[i] = C.getColor(((i % numCols) + offset) % numCols + start);
+    }
+
+    // Advance color after set duration (255 frames)
+    if (i == 255) {
+        i = 0;
+        C.advanceColor();
+    }
+    i++;
+}
+
 void Effects::Color::fade(Controller &C)
 {
     Effects::fade(C, C.getColor());

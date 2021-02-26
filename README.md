@@ -51,7 +51,7 @@ The following commands can be sent over the specified serial channels to customi
 - `effect <value>` - Set current lighting effect
 - `getcol <index>` - Get the colour at the given index, if none provided get the current colour
 - `col <r(0-255)> <g(0-255)> <b(0-255)> <index>` - Set the colour at the given index, if none provided set current colour
-- `setcol <index>` - Set the current active colour to the index specified
+- `curcol <index>` - Set the current active colour to the index specified
 - `finalcol <index>` - Set final acitve color index
 
 Color will be cycled between the value set with sc and fc.\

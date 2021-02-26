@@ -59,6 +59,13 @@ namespace Effects
          */
         void fill(Controller &C);
         /**
+         * Fill strip with alternating colours
+         * Starts at curCol
+         * Ends at finCol
+         * Repeats sequence until strip is filled
+         */
+        void alternateFill(Controller &C);
+        /**
          * Fade the given color in and out
          */
         void fade(Controller &C);

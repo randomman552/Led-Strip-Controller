@@ -129,6 +129,8 @@ public:
     uint8_t getCurColIdx();
     // Index of the final active color
     uint8_t getFinColIdx();
+    // Current color offset (specifies first color to use in color array)
+    int getOffset();
 
     // Get controller instance
     static Controller *getInstance() {
