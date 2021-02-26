@@ -63,6 +63,11 @@ namespace
          * I may later add onboard help using PROGMEM to use program storage space
          */
         void help(SerialCommands *sender);
+
+        /**
+         * Set the final color to be used in color cycle
+         */
+        void finalColor(SerialCommands *sender);
     } // namespace commandFuncs
 }; // namespace
 
@@ -77,10 +82,24 @@ class Controller
 private:
     CRGB *_leds;
     int _numLEDs;
+    /**
+     * Buffer for use with command handler
+     */
     char _commandBuffer[32];
+    /**
+     * SoftwareSerial input and output for controlling the Controller instance.
+     */
     SoftwareSerial _serial;
+    /**
+     * SerialCommands object to handle commands recieved over _serial
+     */
     SerialCommands _commandHandler;
+    /**
+     * Pointer to singleton Controller instance
+     */
     static Controller *_instance;
+    // Offset to get for current color
+    int _colOffset;
 public:
     Controller(int rx, int tx);
     ~Controller();
@@ -93,6 +112,8 @@ public:
     void setColor(CRGB val);
     void setColor(CRGB val, int idx);
     void setCurColIdx(uint8_t val);
+    void setFinColIdx(uint8_t val);
+    void setOffset(int val);
 
     // Getters
     CRGB* getLEDs();
@@ -100,20 +121,32 @@ public:
     uint8_t getEffect();
     uint8_t getBrightness();
     bool getEnabled();
+    // Current color
     CRGB getColor();
+    // Color with the given index
     CRGB getColor(int idx);
+    // Index of the current color
     uint8_t getCurColIdx();
+    // Index of the final active color
+    uint8_t getFinColIdx();
 
     // Get controller instance
     static Controller *getInstance() {
         return _instance;
     };
 
+    // External interaction functions
     /**
      * Main loop method of controller
      * Reads serial for commands, and draws a frame to the LEDs
      */
     void mainloop();
+
+    /**
+     * Advance the current color
+     * Automatically wraps around color index
+     */
+    void advanceColor();
 };
 
 
