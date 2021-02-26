@@ -311,7 +311,7 @@ void commandFuncs::effect(SerialCommands *sender)
     }
 
     // If new value is out of range, display error
-    if (!(newVal <= arrayLength(lFuncs)) - 1 && newVal >= 0) {
+    if (!(newVal <= arrayLength(lFuncs) - 1 && newVal >= 0)) {
         sender->GetSerial()->print("ERROR: Effect must be in range 0 - ");
         sender->GetSerial()->println(arrayLength(lFuncs) - 1);
         return;
