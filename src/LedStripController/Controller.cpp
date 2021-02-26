@@ -26,7 +26,11 @@ static void (*lFuncs[])(Controller&) = {
     Effects::Rainbow::fill,
     Effects::Rainbow::fillEmpty,
     Effects::Rainbow::cycle,
-    Effects::Rainbow::spinCycle
+    Effects::Rainbow::spinCycle,
+    Effects::Random::fill,
+    Effects::Random::fade,
+    Effects::Random::fillEmpty,
+    Effects::Random::fillEmptyMiddle
 };
 
 // Initalise _instance to be a null pointer
@@ -104,7 +108,7 @@ void Controller::setLEDs(CRGB *leds, int numLEDs) { _leds = leds; _numLEDs = num
 
 void Controller::setBrightness(uint8_t val) { EEPROM.update(ADDR_BRIGHTNESS, val); FastLED.setBrightness(val); }
 
-void Controller::setEffect(uint8_t val) { EEPROM.update(ADDR_EFFECT, clamp(val, 0, arrayLength(lFuncs))); }
+void Controller::setEffect(uint8_t val) { EEPROM.update(ADDR_EFFECT, clamp(val, 0, arrayLength(lFuncs) - 1)); }
 
 void Controller::setEnabled(bool val) { EEPROM.update(ADDR_ENABLED, val); }
 
@@ -183,6 +187,9 @@ void Controller::advanceColor() {
     _colOffset++;
     // Wrap around handling
     _colOffset = (_colOffset > getFinColIdx()) ? 0 : _colOffset;
+
+    // Advance random color as well
+    Effects::Random::randomise();
 }
 
 #pragma endregion
@@ -297,11 +304,19 @@ void commandFuncs::effect(SerialCommands *sender)
     char *input = sender->Next();
     int newVal = atoi(input);
 
-    // If new value is null or out of bounds, report current value
-    if (strlen(input) == 0 || !(newVal <= arrayLength(lFuncs)) && newVal >= 0) {
+    // If new value is null report current value
+    if (strlen(input) == 0) {
         sender->GetSerial()->println(Controller::getInstance()->getEffect());
         return;
     }
+
+    // If new value is out of range, display error
+    if (!(newVal <= arrayLength(lFuncs)) - 1 && newVal >= 0) {
+        sender->GetSerial()->print("ERROR: Effect must be in range 0 - ");
+        sender->GetSerial()->println(arrayLength(lFuncs) - 1);
+        return;
+    }
+
     Controller::getInstance()->setEffect(newVal);
     sender->GetSerial()->println("OK");
 }
