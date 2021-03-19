@@ -39,11 +39,9 @@ Controller *Controller::_instance = nullptr;
 
 #pragma region Constructors
 
-Controller::Controller(int rx, int tx):
-    _serial(rx, tx),
-    _commandHandler(&_serial, _commandBuffer, sizeof _commandBuffer)
+Controller::Controller(Stream *serial):
+    _commandHandler(serial, _commandBuffer, sizeof _commandBuffer)
 {
-    // If singleton instance has already been created, use that
     if (_instance) {
         Controller(*_instance);
         return;
@@ -88,9 +86,6 @@ Controller::Controller(int rx, int tx):
 
     // Initalise color index offset
     _colOffset = 0;
-
-    // Start software serial
-    _serial.begin(38400);
 
     // Load saved values
     FastLED.setBrightness(getBrightness());

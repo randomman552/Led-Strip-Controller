@@ -1,3 +1,5 @@
+#include <SoftwareSerial.h>
+
 #include "src/LedStripController/Controller.h"
 
 #define LED_TYPE WS2812B
@@ -9,10 +11,12 @@
 #define BLT_TX 10
 
 CRGB leds[NUM_LEDS];
-Controller ledController(BLT_RX, BLT_TX);
+SoftwareSerial bltSerial(BLT_RX, BLT_TX);
+Controller ledController(&bltSerial);
 
 void setup()
 {
+    bltSerial.begin(38400);
     FastLED.addLeds<LED_TYPE, DATA_PIN, COLOR_ORDER>(leds, NUM_LEDS);
     ledController.setLEDs(leds, NUM_LEDS);
 }

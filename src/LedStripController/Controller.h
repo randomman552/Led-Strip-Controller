@@ -1,7 +1,6 @@
 #ifndef LEDCON_Controller_h
 #define LEDCON_Controller_h
 
-#include <SoftwareSerial.h>
 #include <EEPROM.h>
 #include <SerialCommands.h>
 #include <FastLED.h>
@@ -87,10 +86,6 @@ private:
      */
     char _commandBuffer[32];
     /**
-     * SoftwareSerial input and output for controlling the Controller instance.
-     */
-    SoftwareSerial _serial;
-    /**
      * SerialCommands object to handle commands recieved over _serial
      */
     SerialCommands _commandHandler;
@@ -101,7 +96,7 @@ private:
     // Offset to get for current color
     int _colOffset;
 public:
-    Controller(int rx, int tx);
+    Controller(Stream *serial);
     ~Controller();
 
     // Setters
