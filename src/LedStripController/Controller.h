@@ -2,11 +2,11 @@
 #define LEDCON_Controller_h
 
 #include <EEPROM.h>
-#include <SerialCommands.h>
 #include <FastLED.h>
 
 class Controller;
-#include "./Effects/Effects.h"
+#include "Effects/Effects.h"
+#include "SerialCommands.h"
 
 /**
  * Anonymous namespace containing functions and commands for our use of the SerialCommands library
@@ -72,34 +72,30 @@ namespace
 
 
 /**
- * Singleton Controller class
- * Handles controlling of an LED strip, and recieves commands on the defined RX and TX channels
- * Call Controller::getInstance() to get the controller instance if already created, otherwise use the constructor
+ * Controller class
+ * Handles controlling of an LED strip.
+ * Has two constructors:
+ *  Controller(Stream* serial)
+ *  Controller()
+ * If no stream is provided for serial, then hardware serial is used by default.
+ * After instanciation, LED's to control must be provided using the .setLEDs(leds, numLEDs) method.
+ * .mainloop() method should be called as part of your loop function.
  */
 class Controller
 {
 private:
     CRGB *_leds;
     int _numLEDs;
-    /**
-     * Buffer for use with command handler
-     */
     char _commandBuffer[32];
-    /**
-     * SerialCommands object to handle commands recieved over _serial
-     */
-    SerialCommands _commandHandler;
-    /**
-     * Pointer to singleton Controller instance
-     */
-    static Controller *_instance;
-    // Offset to get for current color
+    ControllerSerialCommands _commandHandler;
     int _colOffset;
 public:
     Controller(Stream *serial);
+    Controller();
     ~Controller();
 
-    // Setters
+    #pragma region Setters
+
     void setLEDs(CRGB *leds, int numLEDs);
     void setEffect(uint8_t val);
     void setBrightness(uint8_t val);
@@ -110,29 +106,25 @@ public:
     void setFinColIdx(uint8_t val);
     void setOffset(int val);
 
-    // Getters
+    #pragma endregion
+
+    #pragma region Getters
+
     CRGB* getLEDs();
     int getNumLEDs();
     uint8_t getEffect();
     uint8_t getBrightness();
     bool getEnabled();
-    // Current color
     CRGB getColor();
-    // Color with the given index
     CRGB getColor(int idx);
-    // Index of the current color
     uint8_t getCurColIdx();
-    // Index of the final active color
     uint8_t getFinColIdx();
-    // Current color offset (specifies first color to use in color array)
-    int getOffset();
+    int getColOffset();
 
-    // Get controller instance
-    static Controller *getInstance() {
-        return _instance;
-    };
+    #pragma endregion
 
-    // External interaction functions
+    #pragma region Other interaction functions
+    
     /**
      * Main loop method of controller
      * Reads serial for commands, and draws a frame to the LEDs
@@ -144,6 +136,8 @@ public:
      * Automatically wraps around color index
      */
     void advanceColor();
+
+    #pragma endregion
 };
 
 

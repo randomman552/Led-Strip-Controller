@@ -34,19 +34,11 @@ static void (*lFuncs[])(Controller&) = {
     Effects::Random::fillEmptyMiddle
 };
 
-// Initalise _instance to be a null pointer
-Controller *Controller::_instance = nullptr;
-
 #pragma region Constructors
 
 Controller::Controller(Stream *serial):
-    _commandHandler(serial, _commandBuffer, sizeof _commandBuffer)
+    _commandHandler(this, serial, _commandBuffer, sizeof _commandBuffer)
 {
-    if (_instance) {
-        Controller(*_instance);
-        return;
-    }
-
     // Check for EEPROM version mismatch
     if (EEPROM.read(ADDR_VERSION) != VERSION) {
         // Perform version update
@@ -81,9 +73,6 @@ Controller::Controller(Stream *serial):
     _commandHandler.AddCommand(new SerialCommand("?", commandFuncs::help));
     _commandHandler.AddCommand(new SerialCommand("help", commandFuncs::help));
 
-    // Set singleton instance
-    _instance = this;
-
     // Initalise color index offset
     _colOffset = 0;
 
@@ -91,6 +80,8 @@ Controller::Controller(Stream *serial):
     FastLED.setBrightness(getBrightness());
     FastLED.setMaxRefreshRate(60);
 }
+
+Controller::Controller() : Controller(&Serial) {};
 
 Controller::~Controller()
 {
@@ -159,7 +150,7 @@ CRGB Controller::getColor(int idx) {
     return color;
 }
 
-int Controller::getOffset() {
+int Controller::getColOffset() {
     return _colOffset;
 }
 
@@ -196,6 +187,14 @@ void Controller::advanceColor() {
 
 #pragma region SerialCommands command handlers
 
+/**
+ * Utility function used to get our controller instance from the given SerialCommands object.
+ */
+Controller* getController(SerialCommands *sender)  
+{
+    return ((ControllerSerialCommands*) sender)->getParent();
+}
+
 void commandFuncs::unrecognised(SerialCommands *sender, const char *cmd) 
 {
     sender->GetSerial()->print("ERROR: '");
@@ -213,7 +212,7 @@ void commandFuncs::brightness(SerialCommands *sender)
         sender->GetSerial()->println(FastLED.getBrightness());
         return;
     }
-    Controller::getInstance()->setBrightness(newVal);
+    getController(sender)->setBrightness(newVal);
     sender->GetSerial()->println("OK");
 }
 
@@ -225,7 +224,7 @@ void commandFuncs::editColor(SerialCommands *sender)
     char *idxInp = sender->Next();
 
     // Get color at specified idx
-    int idx = Controller::getInstance()->getCurColIdx();
+    int idx = getController(sender)->getCurColIdx();
     if (strlen(idxInp) != 0) {
         idx = atoi(idxInp);
         if (idx < 0 || idx >= MAX_COLORS) {
@@ -234,7 +233,7 @@ void commandFuncs::editColor(SerialCommands *sender)
             return;
         }
     }
-    CRGB col = Controller::getInstance()->getColor(idx);
+    CRGB col = getController(sender)->getColor(idx);
 
     // Check inputs are valid
     if (strlen(rInp) == 0 || strlen(gInp) == 0 || strlen(bInp) == 0) {
@@ -246,7 +245,7 @@ void commandFuncs::editColor(SerialCommands *sender)
     col.g = atoi(gInp);
     col.b = atoi(bInp);
 
-    Controller::getInstance()->setColor(col, idx);
+    getController(sender)->setColor(col, idx);
 
     sender->GetSerial()->println("OK");
 }
@@ -255,7 +254,7 @@ void commandFuncs::getColor(SerialCommands *sender)
 {
     char *idxInp = sender->Next();
 
-    int idx = Controller::getInstance()->getCurColIdx();
+    int idx = getController(sender)->getCurColIdx();
     if (strlen(idxInp) != 0) {
         idx = atoi(idxInp);
         // Check if index is within range
@@ -265,7 +264,7 @@ void commandFuncs::getColor(SerialCommands *sender)
             return;
         }
     }
-    CRGB curCol = Controller::getInstance()->getColor(idx);
+    CRGB curCol = getController(sender)->getColor(idx);
 
     sender->GetSerial()->print(curCol.r);
     sender->GetSerial()->print(", ");
@@ -281,7 +280,7 @@ void commandFuncs::switchColor(SerialCommands *sender)
 
     // If no number provided, echo current value
     if (strlen(input) == 0) {
-        sender->GetSerial()->println(Controller::getInstance()->getCurColIdx());
+        sender->GetSerial()->println(getController(sender)->getCurColIdx());
         return;
     }
 
@@ -293,9 +292,9 @@ void commandFuncs::switchColor(SerialCommands *sender)
     }
 
     // Update value
-    Controller::getInstance()->setCurColIdx(newVal);
+    getController(sender)->setCurColIdx(newVal);
     // Reset current offset to prevent any out of range errors
-    Controller::getInstance()->setOffset(0);
+    getController(sender)->setOffset(0);
     sender->GetSerial()->println("OK");
 }
 
@@ -306,7 +305,7 @@ void commandFuncs::effect(SerialCommands *sender)
 
     // If new value is null report current value
     if (strlen(input) == 0) {
-        sender->GetSerial()->println(Controller::getInstance()->getEffect());
+        sender->GetSerial()->println(getController(sender)->getEffect());
         return;
     }
 
@@ -317,13 +316,13 @@ void commandFuncs::effect(SerialCommands *sender)
         return;
     }
 
-    Controller::getInstance()->setEffect(newVal);
+    getController(sender)->setEffect(newVal);
     sender->GetSerial()->println("OK");
 }
 
 void commandFuncs::toggle(SerialCommands *sender)
 {
-    Controller::getInstance()->setEnabled(!Controller::getInstance()->getEnabled());
+    getController(sender)->setEnabled(!getController(sender)->getEnabled());
     sender->GetSerial()->println("OK");
 }
 
@@ -338,7 +337,7 @@ void commandFuncs::finalColor(SerialCommands *sender)
     int newVal = atoi(input);
 
     if (strlen(input) == 0) {
-        sender->GetSerial()->println(Controller::getInstance()->getFinColIdx());
+        sender->GetSerial()->println(getController(sender)->getFinColIdx());
         return;
     }
 
@@ -347,8 +346,8 @@ void commandFuncs::finalColor(SerialCommands *sender)
         sender->GetSerial()->println(MAX_COLORS - 1);
         return;
     }
-    Controller::getInstance()->setFinColIdx(newVal);
-    Controller::getInstance()->setOffset(0);
+    getController(sender)->setFinColIdx(newVal);
+    getController(sender)->setOffset(0);
     sender->GetSerial()->println("OK");
 }
 

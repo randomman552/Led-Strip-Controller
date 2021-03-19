@@ -136,7 +136,7 @@ void Effects::Color::alternateFill(Controller &C)
     int numCols = C.getFinColIdx() + 1 - start;
     CRGB *leds = C.getLEDs();
     int numLEDs = C.getNumLEDs();
-    int offset = C.getOffset();
+    int offset = C.getColOffset();
 
     for (int i = 0; i < numLEDs; i++)
     {
