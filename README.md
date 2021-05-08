@@ -14,7 +14,7 @@ Controller ledCon(Serial);
 ```
 
 An array of LED's may then be provided after creating them with FastLED.\
-An example is shown below:
+The example below is found in Led-Strip-Controller.ino
 ```C++
 #define LED_TYPE WS2812B
 #define DATA_PIN 9
@@ -25,10 +25,12 @@ An example is shown below:
 #define BLT_TX 10
 
 CRGB leds[NUM_LEDS];
-Controller ledController(BLT_RX, BLT_TX);
+SoftwareSerial bltSerial(BLT_RX, BLT_TX);
+Controller ledController(&bltSerial);
 
 void setup()
 {
+    bltSerial.begin(38400);
     FastLED.addLeds<LED_TYPE, DATA_PIN, COLOR_ORDER>(leds, NUM_LEDS);
     ledController.setLEDs(leds, NUM_LEDS);
 }
@@ -37,6 +39,7 @@ void loop()
 {
     ledController.mainloop();
 }
+
 ```
 
 ## Commands
