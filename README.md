@@ -10,10 +10,7 @@ Commands list shown [below](#commands)
 ## Usage
 Creating a Controller object:
 ```C++
-// Serial rx and tx pins
-const int rx = 11;
-const int tx = 10;
-Controller ledCon(rx, tx);
+Controller ledCon(Serial);
 ```
 
 An array of LED's may then be provided after creating them with FastLED.\
