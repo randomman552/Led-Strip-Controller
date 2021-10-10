@@ -1,4 +1,4 @@
-#include "./Effects.h"
+#include "Effects.h"
 
 int clamp(int val, int min, int max)
 {
@@ -9,14 +9,14 @@ int clamp(int val, int min, int max)
 
 #pragma region Base functions
 
-void Effects::clear(Controller &C)
+void Effects::clear(StripController &C)
 {
     CRGB col(0, 0, 0);
     fill_solid(C.getLEDs(), C.getNumLEDs(), col);
 }
 
 
-void Effects::fade(Controller &C, CRGB col)
+void Effects::fade(StripController &C, CRGB col)
 {
     // Ensure i is within range
     i = clamp(i, 0, 255);
@@ -40,7 +40,7 @@ void Effects::fade(Controller &C, CRGB col)
     }
 }
 
-void Effects::fade(Controller &C, CHSV col)
+void Effects::fade(StripController &C, CHSV col)
 {
     CRGB rgbCol;
     hsv2rgb_rainbow(col, rgbCol);
@@ -48,7 +48,7 @@ void Effects::fade(Controller &C, CHSV col)
 }
 
 
-void Effects::fillEmpty(Controller &C, CRGB col)
+void Effects::fillEmpty(StripController &C, CRGB col)
 {
     i = clamp(i, 0, C.getNumLEDs() * 2);
     clear(C);
@@ -74,7 +74,7 @@ void Effects::fillEmpty(Controller &C, CRGB col)
     }
 }
 
-void Effects::fillEmpty(Controller &C, CHSV col)
+void Effects::fillEmpty(StripController &C, CHSV col)
 {
     CRGB rgbCol;
     hsv2rgb_rainbow(col, rgbCol);
@@ -82,7 +82,7 @@ void Effects::fillEmpty(Controller &C, CHSV col)
 }
 
 
-void Effects::fillEmptyMiddle(Controller &C, CRGB col)
+void Effects::fillEmptyMiddle(StripController &C, CRGB col)
 {
     i = clamp(i, 0, C.getNumLEDs());
     clear(C);
@@ -106,7 +106,7 @@ void Effects::fillEmptyMiddle(Controller &C, CRGB col)
     }
 }
 
-void Effects::fillEmptyMiddle(Controller &C, CHSV col)
+void Effects::fillEmptyMiddle(StripController &C, CHSV col)
 {
     CRGB rgbCol;
     hsv2rgb_rainbow(col, rgbCol);
@@ -117,7 +117,7 @@ void Effects::fillEmptyMiddle(Controller &C, CHSV col)
 
 #pragma region Custom color lighting functions
 
-void Effects::Color::fill(Controller &C)
+void Effects::Color::fill(StripController &C)
 {   
     i = clamp(i, 0, 255);
     fill_solid(C.getLEDs(), C.getNumLEDs(), C.getColor());
@@ -130,7 +130,7 @@ void Effects::Color::fill(Controller &C)
     i++;
 }
 
-void Effects::Color::alternateFill(Controller &C)
+void Effects::Color::alternateFill(StripController &C)
 {
     int start = C.getCurColIdx();
     int numCols = C.getFinColIdx() + 1 - start;
@@ -156,17 +156,17 @@ void Effects::Color::alternateFill(Controller &C)
     i++;
 }
 
-void Effects::Color::fade(Controller &C)
+void Effects::Color::fade(StripController &C)
 {
     Effects::fade(C, C.getColor());
 }
 
-void Effects::Color::fillEmpty(Controller &C)
+void Effects::Color::fillEmpty(StripController &C)
 {
     Effects::fillEmpty(C, C.getColor());
 }
 
-void Effects::Color::fillEmptyMiddle(Controller &C)
+void Effects::Color::fillEmptyMiddle(StripController &C)
 {
     Effects::fillEmptyMiddle(C, C.getColor());
 }
@@ -175,12 +175,12 @@ void Effects::Color::fillEmptyMiddle(Controller &C)
 
 #pragma region Rainbow lighting functions
 
-void Effects::Rainbow::fill(Controller &C)
+void Effects::Rainbow::fill(StripController &C)
 {
     fill_rainbow(C.getLEDs(), C.getNumLEDs(), startHue, 255 / C.getNumLEDs());
 }
 
-void Effects::Rainbow::fillEmpty(Controller &C)
+void Effects::Rainbow::fillEmpty(StripController &C)
 {
     i = clamp(i, 0, C.getNumLEDs() * 2);
     clear(C);
@@ -204,7 +204,7 @@ void Effects::Rainbow::fillEmpty(Controller &C)
     if (i == C.getNumLEDs() * 2 || i == 0) reverse = !reverse;
 }
 
-void Effects::Rainbow::cycle(Controller &C)
+void Effects::Rainbow::cycle(StripController &C)
 {
     CHSV hueCol(startHue, 255, 255);
     fill_solid(C.getLEDs(), C.getNumLEDs(), hueCol);
@@ -214,7 +214,7 @@ void Effects::Rainbow::cycle(Controller &C)
     startHue++;
 }
 
-void Effects::Rainbow::spinCycle(Controller &C)
+void Effects::Rainbow::spinCycle(StripController &C)
 {
     //Functions in a similar way to the normal cycle function
     fill_rainbow(C.getLEDs(), C.getNumLEDs(), startHue, 255 / C.getNumLEDs());
@@ -230,7 +230,7 @@ void Effects::Random::randomise()
     color = CHSV(random8(), 255, 255);
 }
 
-void Effects::Random::fill(Controller &C)
+void Effects::Random::fill(StripController &C)
 {
     i = clamp(i, 0, 255);
     fill_solid(C.getLEDs(), C.getNumLEDs(), color);
@@ -243,17 +243,17 @@ void Effects::Random::fill(Controller &C)
     i++;
 }
 
-void Effects::Random::fade(Controller &C)
+void Effects::Random::fade(StripController &C)
 {
     Effects::fade(C, color);
 }
 
-void Effects::Random::fillEmpty(Controller &C)
+void Effects::Random::fillEmpty(StripController &C)
 {
     Effects::fillEmpty(C, color);
 }
 
-void Effects::Random::fillEmptyMiddle(Controller &C)
+void Effects::Random::fillEmptyMiddle(StripController &C)
 {
     Effects::fillEmptyMiddle(C, color);
 }

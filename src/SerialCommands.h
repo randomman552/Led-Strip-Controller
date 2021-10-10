@@ -3,18 +3,18 @@
 
 #include <SerialCommands.h>
 
-#include "Controller.h"
+#include "StripController.h"
 
 class ControllerSerialCommands : public SerialCommands {
 private:
-    Controller *_parent;
+    StripController *_parent;
 public:
-    ControllerSerialCommands(Controller* parent, Stream* serial, char* buffer, int16_t buffer_len, char* term = "\r\n", char* delim = " "):
+    ControllerSerialCommands(StripController* parent, Stream* serial, char* buffer, int16_t buffer_len, char* term = "\r\n", char* delim = " "):
     SerialCommands(serial, buffer, buffer_len, term, delim) {
         _parent = parent;
     };
 
-    Controller *getParent() {
+    StripController *getParent() {
         return _parent;
     }
 };

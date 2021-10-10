@@ -3,7 +3,7 @@
 
 #include <FastLED.h>
 
-#include "../Controller.h"
+#include "../StripController.h"
 
 /**
  * Clamp helper function.
@@ -26,28 +26,28 @@ namespace Effects
     // Boolean to control iteration direction for lighting functions
     static bool reverse = false;
 
-    void clear(Controller &C);
+    void clear(StripController &C);
 
     /**
      * Base fade function used by other fade functions
      * Used in Color::fade and Random::fade
      */
-    void fade(Controller &C, CRGB col);
-    void fade(Controller &C, CHSV col);
+    void fade(StripController &C, CRGB col);
+    void fade(StripController &C, CHSV col);
 
     /**
      * Base fillEmpty function used by other fillEmpty functions
      * Used in Color::fillEmpty and Random::fillEmpty
      */
-    void fillEmpty(Controller &C, CRGB col);
-    void fillEmpty(Controller &C, CHSV col);
+    void fillEmpty(StripController &C, CRGB col);
+    void fillEmpty(StripController &C, CHSV col);
 
     /**
      * Base fillEmptyMiddle function used by other fillEmptyMiddle functions
      * Used in Color::fillEmptyMiddle and Random::fillEmptyMiddle
      */
-    void fillEmptyMiddle(Controller &C, CRGB col);
-    void fillEmptyMiddle(Controller &C, CHSV col);
+    void fillEmptyMiddle(StripController &C, CRGB col);
+    void fillEmptyMiddle(StripController &C, CHSV col);
 
     /**
      * Lighting functions using custom color
@@ -57,26 +57,26 @@ namespace Effects
         /**
          * Fill the LED with the current set colour.
          */
-        void fill(Controller &C);
+        void fill(StripController &C);
         /**
          * Fill strip with alternating colours
          * Starts at curCol
          * Ends at finCol
          * Repeats sequence until strip is filled
          */
-        void alternateFill(Controller &C);
+        void alternateFill(StripController &C);
         /**
          * Fade the given color in and out
          */
-        void fade(Controller &C);
+        void fade(StripController &C);
         /**
          * Fill and empty the LED strip from end to end
          */
-        void fillEmpty(Controller &C);
+        void fillEmpty(StripController &C);
         /**
          * Fill and empty the LED strip from the end's to the middle
          */
-        void fillEmptyMiddle(Controller &C);
+        void fillEmptyMiddle(StripController &C);
     } // namespace Color
 
     /**
@@ -89,21 +89,21 @@ namespace Effects
         /**
          * Fill the LED strip with a rainbow gradient
          */
-        void fill(Controller &C);
+        void fill(StripController &C);
         /**
          * Fill and empty the LED strip with a rainbow gradient from end to end
          */
-        void fillEmpty(Controller &C);
+        void fillEmpty(StripController &C);
         /**
          * Fill the LED strip with a hue.
          * Advance hue by 1 each frame, showly shifting through all colors
          */
-        void cycle(Controller &C);
+        void cycle(StripController &C);
         /**
          * Fill LED strip with rainbow gradient
          * Rotate rainbow gradient by 1 each frame
          */
-        void spinCycle(Controller &C);
+        void spinCycle(StripController &C);
     } // namespace Rainbow
 
     namespace Random
@@ -116,19 +116,19 @@ namespace Effects
         /**
          * Fill led strip with random color
          */
-        void fill(Controller &C);
+        void fill(StripController &C);
         /**
          * Fade in random color, then fade it out
          */
-        void fade(Controller &C);
+        void fade(StripController &C);
         /**
          * Fill with random color, then empty
          */
-        void fillEmpty(Controller &C);
+        void fillEmpty(StripController &C);
         /**
          * Fill with random color from edges, then empty to middle
          */
-        void fillEmptyMiddle(Controller &C);
+        void fillEmptyMiddle(StripController &C);
     } // namespace Random
     
 }; // namespace Effects

@@ -4,7 +4,7 @@
 #include <EEPROM.h>
 #include <FastLED.h>
 
-class Controller;
+class StripController;
 #include "Effects/Effects.h"
 #include "SerialCommands.h"
 
@@ -81,7 +81,7 @@ namespace
  * After instanciation, LED's to control must be provided using the .setLEDs(leds, numLEDs) method.
  * .mainloop() method should be called as part of your loop function.
  */
-class Controller
+class StripController
 {
 private:
     CRGB *_leds;
@@ -90,9 +90,9 @@ private:
     ControllerSerialCommands _commandHandler;
     int _colOffset;
 public:
-    Controller(Stream *serial);
-    Controller();
-    ~Controller();
+    StripController(Stream *serial);
+    StripController();
+    ~StripController();
 
     #pragma region Setters
 

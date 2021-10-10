@@ -1,4 +1,4 @@
-#include "./Controller.h"
+#include "StripController.h"
 
 #define VERSION 3
 #define MAX_COLORS 8
@@ -18,7 +18,7 @@
  * Array of lighting function pointers
  * Allows us to call an lighting function by index rather than by name
  */
-static void (*lFuncs[])(Controller&) = {
+static void (*lFuncs[])(StripController&) = {
     Effects::Color::fill,
     Effects::Color::alternateFill,
     Effects::Color::fade,
@@ -36,7 +36,7 @@ static void (*lFuncs[])(Controller&) = {
 
 #pragma region Constructors
 
-Controller::Controller(Stream *serial):
+StripController::StripController(Stream *serial):
     _commandHandler(this, serial, _commandBuffer, sizeof _commandBuffer)
 {
     // Check for EEPROM version mismatch
@@ -81,9 +81,9 @@ Controller::Controller(Stream *serial):
     FastLED.setMaxRefreshRate(60);
 }
 
-Controller::Controller() : Controller(&Serial) {};
+StripController::StripController() : StripController(&Serial) {};
 
-Controller::~Controller()
+StripController::~StripController()
 {
 }
 
@@ -91,34 +91,34 @@ Controller::~Controller()
 
 #pragma region Setters
 
-void Controller::setLEDs(CRGB *leds, int numLEDs) { _leds = leds; _numLEDs = numLEDs; }
+void StripController::setLEDs(CRGB *leds, int numLEDs) { _leds = leds; _numLEDs = numLEDs; }
 
-void Controller::setBrightness(uint8_t val) { EEPROM.update(ADDR_BRIGHTNESS, val); FastLED.setBrightness(val); }
+void StripController::setBrightness(uint8_t val) { EEPROM.update(ADDR_BRIGHTNESS, val); FastLED.setBrightness(val); }
 
-void Controller::setEffect(uint8_t val) { EEPROM.update(ADDR_EFFECT, clamp(val, 0, arrayLength(lFuncs) - 1)); }
+void StripController::setEffect(uint8_t val) { EEPROM.update(ADDR_EFFECT, clamp(val, 0, arrayLength(lFuncs) - 1)); }
 
-void Controller::setEnabled(bool val) { EEPROM.update(ADDR_ENABLED, val); }
+void StripController::setEnabled(bool val) { EEPROM.update(ADDR_ENABLED, val); }
 
-void Controller::setColor(CRGB val) { setColor(val, getCurColIdx()); }
+void StripController::setColor(CRGB val) { setColor(val, getCurColIdx()); }
 
-void Controller::setColor(CRGB val, int idx) {
+void StripController::setColor(CRGB val, int idx) {
     clamp(idx, 0, MAX_COLORS - 1);
     idx = ADDR_COLORS + idx * sizeof(CRGB);
     EEPROM.put<CRGB>(idx, val);
 }
 
-void Controller::setCurColIdx(uint8_t val) { 
+void StripController::setCurColIdx(uint8_t val) { 
     val = clamp(val, 0, MAX_COLORS);
     setFinColIdx(val + getFinColIdx());
     EEPROM.update(ADDR_CURRENT_COLOR_IDX, val);
 }
 
-void Controller::setFinColIdx(uint8_t val) {
+void StripController::setFinColIdx(uint8_t val) {
     val = clamp(val, getCurColIdx(), MAX_COLORS - 1);
     EEPROM.update(ADDR_FINAL_COLOR_IDX, val); 
 }
 
-void Controller::setOffset(int val) {
+void StripController::setOffset(int val) {
     val = clamp(val, 0, getFinColIdx());
     _colOffset = val;
 }
@@ -127,21 +127,21 @@ void Controller::setOffset(int val) {
 
 #pragma region Getters
 
-CRGB* Controller::getLEDs() { return _leds; }
+CRGB* StripController::getLEDs() { return _leds; }
 
-int Controller::getNumLEDs() { return _numLEDs; }
+int StripController::getNumLEDs() { return _numLEDs; }
 
-uint8_t Controller::getBrightness() { return EEPROM.read(ADDR_BRIGHTNESS); }
+uint8_t StripController::getBrightness() { return EEPROM.read(ADDR_BRIGHTNESS); }
 
-uint8_t Controller::getEffect() { return EEPROM.read(ADDR_EFFECT); }
+uint8_t StripController::getEffect() { return EEPROM.read(ADDR_EFFECT); }
 
-bool Controller::getEnabled() { return EEPROM.read(ADDR_ENABLED); }
+bool StripController::getEnabled() { return EEPROM.read(ADDR_ENABLED); }
 
-CRGB Controller::getColor() { 
+CRGB StripController::getColor() { 
     return getColor(getCurColIdx() + _colOffset);
 }
 
-CRGB Controller::getColor(int idx) {
+CRGB StripController::getColor(int idx) {
     CRGB color;
     if (idx < 0) idx = 0;
     if (idx > MAX_COLORS) idx = MAX_COLORS - 1;
@@ -150,19 +150,19 @@ CRGB Controller::getColor(int idx) {
     return color;
 }
 
-int Controller::getColOffset() {
+int StripController::getColOffset() {
     return _colOffset;
 }
 
-uint8_t Controller::getCurColIdx() { return EEPROM.read(ADDR_CURRENT_COLOR_IDX); }
+uint8_t StripController::getCurColIdx() { return EEPROM.read(ADDR_CURRENT_COLOR_IDX); }
 
-uint8_t Controller::getFinColIdx() { return EEPROM.read(ADDR_FINAL_COLOR_IDX); }
+uint8_t StripController::getFinColIdx() { return EEPROM.read(ADDR_FINAL_COLOR_IDX); }
 
 #pragma endregion
 
 #pragma region Interaction functions
 
-void Controller::mainloop() 
+void StripController::mainloop() 
 {
     _commandHandler.ReadSerial();
 
@@ -174,7 +174,7 @@ void Controller::mainloop()
     FastLED.show();
 }
 
-void Controller::advanceColor() {
+void StripController::advanceColor() {
     _colOffset++;
     // Wrap around handling
     _colOffset = (_colOffset > getFinColIdx()) ? 0 : _colOffset;
@@ -190,7 +190,7 @@ void Controller::advanceColor() {
 /**
  * Utility function used to get our controller instance from the given SerialCommands object.
  */
-Controller* getController(SerialCommands *sender)  
+StripController* getController(SerialCommands *sender)  
 {
     return ((ControllerSerialCommands*) sender)->getParent();
 }
