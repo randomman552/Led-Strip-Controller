@@ -59,20 +59,22 @@ void loop()
 
 ## Provided lighting functions
 There are 13 lighting functions currently supplied with this library.
-- User defined color functions
-    - Use the colors defined by the user
-    - Will cycle between user defined colors
-    0. Single color fill - Fill the strip with a solid color
-    1. Alternate fill - Fill the strip with alternating colors based on the colors stored in memory
-    2. Single color fade - Fade the given color in and out
-    3. Single color wipe - Fills a single color from one end of the strip to the other
-    4. Single color wipe (center) - A variant of the previous function that fills from the center
-- Rainbow color functions
+### User defined color functions
+- Use the colors defined by the user
+- Will cycle between user defined colors
+0. Single color fill - Fill the strip with a solid color
+1. Alternate fill - Fill the strip with alternating colors based on the colors stored in memory
+2. Single color fade - Fade the given color in and out
+3. Single color wipe - Fills a single color from one end of the strip to the other
+4. Single color wipe (center) - A variant of the previous function that fills from the center
+
+### Rainbow color functions
     5. Rainbow fill - Fill the strip with a rainbow gradient
     6. Rainbow wipe - Same as wipe function but with rainbow gradient
     7. Rainbow shift - Shift the hue of the led strip constantly, creating a rainbow effect
     8. Rainbow cycle - Cycle a rainbow gradient down the strip continuously
-- Random color functions
+
+### Random color functions
     - These functions generate a random color, this color is changed after a certain number of frames
     9. Random color fill - Fill's the strip with a random solid color
     10. Random color fade - Fade a random color in and out
