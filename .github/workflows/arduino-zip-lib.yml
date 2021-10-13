@@ -10,14 +10,11 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - name: Run a one-line script
-        run: echo Hello, world!
-
       - name: Move readme
         run: mv README.md ./src/
 
       - name: Rename folder
-        run: mv -r src LedStripController
+        run: mv src LedStripController
 
       - name: Zip source code
         run: zip -r -q LedStripController.zip LedStripController
