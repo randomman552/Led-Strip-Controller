@@ -69,17 +69,17 @@ There are 13 lighting functions currently supplied with this library.
 4. Single color wipe (center) - A variant of the previous function that fills from the center
 
 ### Rainbow color functions
-    5. Rainbow fill - Fill the strip with a rainbow gradient
-    6. Rainbow wipe - Same as wipe function but with rainbow gradient
-    7. Rainbow shift - Shift the hue of the led strip constantly, creating a rainbow effect
-    8. Rainbow cycle - Cycle a rainbow gradient down the strip continuously
+5. Rainbow fill - Fill the strip with a rainbow gradient
+6. Rainbow wipe - Same as wipe function but with rainbow gradient
+7. Rainbow shift - Shift the hue of the led strip constantly, creating a rainbow effect
+8. Rainbow cycle - Cycle a rainbow gradient down the strip continuously
 
 ### Random color functions
-    - These functions generate a random color, this color is changed after a certain number of frames
-    9. Random color fill - Fill's the strip with a random solid color
-    10. Random color fade - Fade a random color in and out
-    11. Random color wipe - Same as color wipe, but with a random color
-    12. Random color wipe (center) - Same as above
+- These functions generate a random color, this color is changed after a certain number of frames
+9. Random color fill - Fill's the strip with a random solid color
+10. Random color fade - Fade a random color in and out
+11. Random color wipe - Same as color wipe, but with a random color
+12. Random color wipe (center) - Same as above
 
 ## Commands
 The following commands can be sent over the provided stream to alter the behaviour of SerialController.
