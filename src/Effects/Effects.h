@@ -5,15 +5,6 @@
 
 #include "../LEDStripController.h"
 
-/**
- * Clamp helper function.
- * Clamps given integer to be within the given range (inclusive)
- * i - Variable to clamp
- * max - Maximum value
- * min - Minimum value
- */
-int clamp(int val, int min, int max);
-
 
 namespace LEDStripController {
     /**
