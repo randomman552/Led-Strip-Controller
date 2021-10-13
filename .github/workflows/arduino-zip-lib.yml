@@ -17,7 +17,7 @@ jobs:
         run: mv README.md ./src
 
       - name: Zip source code
-        run: -r -q LEDStripController.zip src
+        run: zip -r -q LEDStripController.zip src
       
       - name: Automatic Releases
         uses: marvinpinto/action-automatic-releases@v1.2.1
