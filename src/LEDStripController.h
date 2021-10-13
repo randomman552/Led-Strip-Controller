@@ -21,6 +21,7 @@ namespace LEDStripController
         const int currentColorIdx = 5;
         const int finalColorIdx = 6;
         const int colors = 7;
+        const int end = 7 + sizeof(CRGB) * maxColors;
     };
 
     class Controller

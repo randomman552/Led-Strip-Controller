@@ -2,6 +2,9 @@
 Library to control an LED strip from an Arduino.\
 All elements of this library are held under the LEDStripController namespace.
 
+Please note this library uses EEPROM to store values between runs.\
+Currently addresses 1-31 are used.
+
 ## Dependencies
 - FastLED - [here](https://www.arduino.cc/reference/en/libraries/fastled/)
 - SerialCommands - [here](https://www.arduino.cc/reference/en/libraries/serialcommands/)
