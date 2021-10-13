@@ -14,10 +14,13 @@ jobs:
         run: echo Hello, world!
 
       - name: Move readme
-        run: mv README.md ./src
+        run: mv README.md ./src/
+
+      - name: Rename folder
+        run: mv -r src LedStripController
 
       - name: Zip source code
-        run: zip -r -q LEDStripController.zip src
+        run: zip -r -q LedStripController.zip LedStripController
       
       - name: Automatic Releases
         uses: marvinpinto/action-automatic-releases@v1.2.1
@@ -25,4 +28,4 @@ jobs:
           repo_token: "${{ secrets.GITHUB_TOKEN }}"
           automatic_release_tag: "latest"
           files: |
-            LEDStripController.zip
+            LedStripController.zip
