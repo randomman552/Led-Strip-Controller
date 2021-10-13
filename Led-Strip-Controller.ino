@@ -1,6 +1,6 @@
 #include <SoftwareSerial.h>
 
-#include "src/StripController.h"
+#include "src/LEDStripController.h"
 
 #define LED_TYPE WS2812B
 #define DATA_PIN 9
@@ -12,7 +12,7 @@
 
 CRGB leds[NUM_LEDS];
 SoftwareSerial bltSerial(BLT_RX, BLT_TX);
-StripController ledController(&bltSerial);
+LEDStripController::SerialController ledController(&bltSerial);
 
 void setup()
 {
