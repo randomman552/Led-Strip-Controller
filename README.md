@@ -2,8 +2,14 @@
 Library to control an LED strip from an Arduino.\
 All elements of this library are held under the LEDStripController namespace.
 
-Please note this library uses EEPROM to store values between runs.\
-Currently addresses 1-31 are used.
+NOTE: This library uses EEPROM to store values between runs.\
+Currently 32 bits of EEPROM are used (addresses 0-31).\
+Currently there is no way to alter these addresses without modifying the library.
+
+To access the final memory address at run time, use:
+```C++
+LEDStripController::Addrs::end
+```
 
 ## Dependencies
 - FastLED - [here](https://www.arduino.cc/reference/en/libraries/fastled/)

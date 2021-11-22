@@ -23,14 +23,14 @@ namespace LEDStripController
      */
     namespace Addrs
     {
-        const int version = 1;
-        const int effect = 2;
-        const int brightness = 3;
-        const int enabled = 4;
-        const int currentColorIdx = 5;
-        const int finalColorIdx = 6;
-        const int fps = 7;
-        const int colors = 8;
+        const int version = 0;
+        const int effect = 1;
+        const int brightness = 2;
+        const int enabled = 3;
+        const int currentColorIdx = 4;
+        const int finalColorIdx = 5;
+        const int fps = 6;
+        const int colors = 7;
         const int end = colors + sizeof(CRGB) * maxColors;
     };
 
