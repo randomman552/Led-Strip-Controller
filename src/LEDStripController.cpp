@@ -25,6 +25,7 @@ namespace LEDStripController {
             setEnabled(true);
             setCurColIdx(0);
             setFinColIdx(0);
+            setFps(60);
             EEPROM.update(Addrs::version, version);
 
             // Default all colors to white
@@ -38,7 +39,7 @@ namespace LEDStripController {
 
         // Load saved values
         FastLED.setBrightness(getBrightness());
-        FastLED.setMaxRefreshRate(60);
+        FastLED.setMaxRefreshRate(getFps());
     }
 
     Controller::~Controller()
@@ -49,7 +50,12 @@ namespace LEDStripController {
 
     #pragma region Setters
 
-    void Controller::setLEDs(CRGB *leds, int numLEDs) { _leds = leds; _numLEDs = numLEDs; }
+    void Controller::setLEDs(CRGB *leds, int numLEDs) { 
+        _leds = leds;
+        _numLEDs = numLEDs;
+        // Ensure framerate is correct for new leds
+        FastLED.setMaxRefreshRate(getFps());
+    }
 
     void Controller::setBrightness(uint8_t val) { EEPROM.update(Addrs::brightness, val); FastLED.setBrightness(val); }
 
@@ -60,9 +66,15 @@ namespace LEDStripController {
     void Controller::setColor(CRGB val) { setColor(val, getCurColIdx()); }
 
     void Controller::setColor(CRGB val, int idx) {
-        clamp(idx, 0, maxColors - 1);
+        idx = clamp(idx, 0, maxColors - 1);
         idx = Addrs::colors + idx * sizeof(CRGB);
         EEPROM.put<CRGB>(idx, val);
+    }
+
+    void Controller::setFps(uint8_t val) {
+        val = clamp(val, 1, 255);
+        EEPROM.update(Addrs::fps, val);
+        FastLED.setMaxRefreshRate(val);
     }
 
     void Controller::setCurColIdx(uint8_t val) { 
@@ -107,6 +119,8 @@ namespace LEDStripController {
         EEPROM.get<CRGB>(idx, color);
         return color;
     }
+
+    uint8_t Controller::getFps() { return EEPROM.read(Addrs::fps); }
 
     int Controller::getColOffset() {
         return _colOffset;

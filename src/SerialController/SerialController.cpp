@@ -20,6 +20,7 @@ namespace LEDStripController {
         _commandHandler.AddCommand(new SerialCommand("col", commandFuncs::editColor));
         _commandHandler.AddCommand(new SerialCommand("curcol", commandFuncs::switchColor));
         _commandHandler.AddCommand(new SerialCommand("finalcol", commandFuncs::finalColor));
+        _commandHandler.AddCommand(new SerialCommand("fps", commandFuncs::fps));
         // Help is aliased to "?" and "help"
         _commandHandler.AddCommand(new SerialCommand("?", commandFuncs::help));
         _commandHandler.AddCommand(new SerialCommand("help", commandFuncs::help));
@@ -48,6 +49,28 @@ namespace LEDStripController {
         sender->GetSerial()->println("' IS NOT RECOGNISED");
     }
 
+    void commandFuncs::fps(SerialCommands *sender)
+    {
+        char *input = sender->Next();
+
+        // Set new value if provided
+        if (strlen(input) != 0) {
+            uint8_t val = atoi(input);
+
+            // Make sure value is in range
+            if (val < 1 || val > 255) {
+                sender->GetSerial()->println("ERROR: Value must be in range 1-255");
+                return;
+            }
+            getController(sender)->setFps(val);
+            sender->GetSerial()->println("OK");
+            return;
+        }
+
+        // When no value specified, show current value
+        sender->GetSerial()->println(getController(sender)->getFps());
+    }
+
     void commandFuncs::brightness(SerialCommands *sender) 
     {
         char *input = sender->Next();
@@ -62,7 +85,7 @@ namespace LEDStripController {
         sender->GetSerial()->println("OK");
     }
 
-    void commandFuncs::editColor(SerialCommands *sender) 
+    void commandFuncs::editColor(SerialCommands *sender)
     {
         char *rInp = sender->Next();
         char *gInp = sender->Next();

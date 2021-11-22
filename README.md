@@ -24,7 +24,7 @@ Currently addresses 1-31 are used.
 ## Usage
 To create a normal Controller object (with no serial attachment for commands), do the following:
 ```C++
-Controller ledCon;
+LEDStripController::Controller ledCon;
 ```
 Note: This Controller will not yet do anything, in the setup function you will need to:
 - Create an array of leds using FastLED.
@@ -37,14 +37,14 @@ I use this for my own bluetooth controlled led strip.
 #define LED_TYPE WS2812B
 #define DATA_PIN 9
 #define COLOR_ORDER GRB
-#define NUM_LEDS 60
+#define NUM_LEDS 144
 
 #define BLT_RX 11
 #define BLT_TX 10
 
 CRGB leds[NUM_LEDS];
 SoftwareSerial bltSerial(BLT_RX, BLT_TX);
-Controller ledController(&bltSerial);
+LEDStripController::SerialController ledController(&bltSerial);
 
 void setup()
 {
@@ -57,7 +57,6 @@ void loop()
 {
     ledController.mainloop();
 }
-
 ```
 
 ## Provided lighting functions
@@ -95,6 +94,7 @@ The following commands can be sent over the provided stream to alter the behavio
 - `col <r(0-255)> <g(0-255)> <b(0-255)> <index>` - Set the colour at the given index, if none provided set current colour
 - `curcol <index>` - Set the current active colour to the index specified
 - `finalcol <index>` - Set final acitve color index
+- `fps <value(1-255)>` - Set the target refresh rate. Used to control the speed of animation.
 
 Color will be cycled between the value set with `curcol` and `finalcol`.\
 For example if color0 is red, color1 is green, and color2 is blue:\ 
