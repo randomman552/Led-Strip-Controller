@@ -5,7 +5,7 @@
 #define LED_TYPE WS2812B
 #define DATA_PIN 9
 #define COLOR_ORDER GRB
-#define NUM_LEDS 153
+#define NUM_LEDS 144
 
 #define BLT_RX 11
 #define BLT_TX 10

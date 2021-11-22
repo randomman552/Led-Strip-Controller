@@ -15,7 +15,7 @@ namespace LEDStripController
      */
     int clamp(int val, int min, int max);
 
-    const int version = 3;
+    const int version = 5;
     const int maxColors = 8;
 
     /**
@@ -29,8 +29,9 @@ namespace LEDStripController
         const int enabled = 4;
         const int currentColorIdx = 5;
         const int finalColorIdx = 6;
-        const int colors = 7;
-        const int end = 7 + sizeof(CRGB) * maxColors;
+        const int fps = 7;
+        const int colors = 8;
+        const int end = colors + sizeof(CRGB) * maxColors;
     };
 
     class Controller
@@ -51,6 +52,7 @@ namespace LEDStripController
         void setEnabled(bool val);
         void setColor(CRGB val);
         void setColor(CRGB val, int idx);
+        void setFps(uint8_t val);
         void setCurColIdx(uint8_t val);
         void setFinColIdx(uint8_t val);
         void setOffset(int val);
@@ -66,6 +68,7 @@ namespace LEDStripController
         bool getEnabled();
         CRGB getColor();
         CRGB getColor(int idx);
+        uint8_t getFps();
         uint8_t getCurColIdx();
         uint8_t getFinColIdx();
         int getColOffset();

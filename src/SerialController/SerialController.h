@@ -52,6 +52,12 @@ namespace LEDStripController {
              * Form: "brightness <value(0-255)>"
              */
             void brightness(SerialCommands *sender);
+
+            /**
+             * Fps command handler
+             * Form: "fps <value(0-255>"
+             */
+            void fps(SerialCommands *sender);
             
             /**
              * Function to print out re-direct to GitHub repo, where a list of commands is provided in README.md
