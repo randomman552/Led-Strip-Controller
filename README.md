@@ -101,6 +101,22 @@ void func(Controller &C) {
 You can then use the functions provided by FastLED and the Controller class to produce your own custom effects.\
 For examples of these functions, please take a look at [Effects.h](src/Effects/Effects.h).
 
+## Color cycling
+Colors are automatically cycled in the provided lighting functions.\
+This cycle runs automatically between the set minimum color index and maximum color index.
+
+For example the following variables:
+| Variable             | Value     |
+|----------------------|:---------:|
+| Color 0              | 255, 0, 0 |
+| Color 1              | 0, 255, 0 |
+| Color 2              | 0, 0, 255 |
+| Minimum color index  | 0         |
+| Maximuim color index | 2         |
+
+Would result in a cycle of red, green, blue which repeats.\
+The speed of this animation is set by the FPS variable.
+
 ## Commands
 The following commands can be sent over the provided stream to alter the behaviour of SerialController.
 
@@ -116,7 +132,3 @@ The following commands can be sent over the provided stream to alter the behavio
 - `mincolor`/`mic <index>` - Set the current active colour to the index specified
 - `maxcolor`/`mac <index>` - Set final acitve color index
 - `fps <value(1-255)>` - Set the target refresh rate. Used to control the speed of animation.
-
-Color will be cycled between the value set with `curcol` and `finalcol`.\
-For example if color0 is red, color1 is green, and color2 is blue:\ 
-sc would be set to 0, and fc would be set to 2. Colours would then cycle between red, green, and blue.
