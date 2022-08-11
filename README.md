@@ -113,8 +113,8 @@ The following commands can be sent over the provided stream to alter the behavio
   - `c <index>` - Get the color with the given index
   - `c <r(0-255)> <g(0-255)> <b(0-255)>` - Set the current color
   - `c <r(0-255)> <g(0-255)> <b(0-255)> <index>` - Set the color with the given index
-- `curcol`/`cc <index>` - Set the current active colour to the index specified
-- `finalcol`/`fc <index>` - Set final acitve color index
+- `mincolor`/`mic <index>` - Set the current active colour to the index specified
+- `maxcolor`/`mac <index>` - Set final acitve color index
 - `fps <value(1-255)>` - Set the target refresh rate. Used to control the speed of animation.
 
 Color will be cycled between the value set with `curcol` and `finalcol`.\
