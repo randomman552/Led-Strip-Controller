@@ -2,6 +2,10 @@
 
 // Base lighting functions
 namespace LEDStripController::Effects {
+    // Iterator value for lighting functions
+    int i = 0;
+    // Boolean to control iteration direction for lighting functions
+    bool reverse = false;
 
     void clear(Controller &C) {
         CRGB col(0, 0, 0);
@@ -170,6 +174,8 @@ namespace LEDStripController::Effects::Color {
 
 // Rainbow lighting functions
 namespace LEDStripController::Effects::Rainbow {
+    int startHue = 0;
+    
     void fill(Controller &C) {
         fill_rainbow(C.getLEDs(), C.getNumLEDs(), startHue, 255 / C.getNumLEDs());
     }
@@ -215,6 +221,8 @@ namespace LEDStripController::Effects::Rainbow {
 
 // Random lighting functions
 namespace LEDStripController::Effects::Random {
+    CHSV color = CHSV(random8(), 255, 255);
+
     void randomise() {
         color = CHSV(random8(), 255, 255);
     }

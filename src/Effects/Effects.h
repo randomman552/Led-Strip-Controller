@@ -13,11 +13,6 @@ namespace LEDStripController {
      */
     namespace Effects
     {
-        // Iterator value for lighting functions
-        static int i = 0;
-        // Boolean to control iteration direction for lighting functions
-        static bool reverse = false;
-
         #pragma region Base functions
         /**
          * @brief Clear the LED Strip of color
@@ -122,8 +117,6 @@ namespace LEDStripController {
          */
         namespace Rainbow
         {
-            static int startHue = 0;
-
             /**
              * Fill the LED strip with a rainbow gradient
              */
@@ -152,7 +145,6 @@ namespace LEDStripController {
          */
         namespace Random
         {
-            static CHSV color = CHSV(random8(), 255, 255);
             /**
              * Randomise current Random color
              */
