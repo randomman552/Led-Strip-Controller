@@ -6,70 +6,69 @@
 
 namespace LEDStripController {
     /**
-     * Anonymous namespace containing functions and commands for our use of the SerialCommands library
+     * Anonymous namespace containing functions and commands for our use of the SerialCommands library.
+     * Stored in an anonymous namespace to prevent access from outside this library.
      */
     namespace
     {
         namespace commandFuncs
         {
             /**
-             * Tells the user that the command they entered is not recognised
+             * Unrecognised command handler
              */
             void unrecognised(SerialCommands *sender, const char *cmd);
             
             /**
-             * Effect command handler
-             * Form: "effect <effect id(0-9)>"
+             * Command handler
+             * "effect/e <id(0-effects.size())>"
              */
             void effect(SerialCommands *sender);
         
             /**
-             * Toggle command handler
-             * Form: "toggle"
+             * Command handler
+             * "toggle/t <state(1,0)>"
              */
             void toggle(SerialCommands *sender);
-
-            /**
-             * Color getting command handler
-             * Form: "getColor <idx(0-MAX_COLORS)>"
-             */
-            void getColor(SerialCommands *sender);
             
             /**
-             * Color editing command handler
-             * Form: "editColor <red(0-255)> <green(0-255)> <blue(0-255)> <Optional:idx(0-MAX_COLORS-1)> "
+             * Command handler
+             * "color/c" - Get current color
+             * "color/c <index(0-7)>" - Get color with index
+             * "color/c <r(0-255)> <g(0-255)> <b(0-255)>" - Set current color
+             * "color/c <r(0-255)> <g(0-255)> <b(0-255)> <index(0-7)>" Set color with index
              */
             void editColor(SerialCommands *sender);
 
             /**
-             * Color switching command handler
-             * Form: switchColor <idx(0-MAX_COLORS)>
+             * Command handler
+             * "mincolor/mic <index(0-7)>"
              */
-            void switchColor(SerialCommands *sender);
+            void minColor(SerialCommands *sender);
 
             /**
-             * Brightness command handler
-             * Form: "brightness <value(0-255)>"
+             * Command handler
+             * "maxcolor/mac <index(0-7)>"
+             */
+            void maxColor(SerialCommands *sender);
+
+            /**
+             * Command handler
+             * "bright/b <value(0-255)>"
              */
             void brightness(SerialCommands *sender);
 
             /**
-             * Fps command handler
-             * Form: "fps <value(0-255>"
+             * Command handler
+             * "fps <value(0-255>"
              */
             void fps(SerialCommands *sender);
             
             /**
-             * Function to print out re-direct to GitHub repo, where a list of commands is provided in README.md
-             * I have done this instead of adding onboard help in an attempt to reduce memory consumption.
-             * I may later add onboard help using PROGMEM to use program storage space
+             * Command handler
+             * "help/?"
              */
             void help(SerialCommands *sender);
 
-            /**
-             * Set the final color to be used in color cycle
-             */
-            void finalColor(SerialCommands *sender);
         }; // namespace commandFuncs
     }; // namespace
     

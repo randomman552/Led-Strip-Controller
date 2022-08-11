@@ -121,14 +121,14 @@ The speed of this animation is set by the FPS variable.
 The following commands can be sent over the provided stream to alter the behaviour of SerialController.
 
 - `help`/`?` - Returns URL of this page, where list of commands is provided
-- `toggle`/`t` - Toggle the strip on or off
+- `toggle`/`t <state(0,1)>` - Toggle the strip on or off
 - `bright`/`b <value(0-255)>` - Set the brightness of the strip
 - `effect`/`e <value>` - Set current lighting effect
-- `col`/`c <r(0-255)> <g(0-255)> <b(0-255)> <index>` - Color interaction CLI, has several forms:
+- `col`/`c <r(0-255)> <g(0-255)> <b(0-255)> <index(0-7)>` - Color interaction CLI, has several forms:
   - `c` - Get the current color
   - `c <index>` - Get the color with the given index
   - `c <r(0-255)> <g(0-255)> <b(0-255)>` - Set the current color
   - `c <r(0-255)> <g(0-255)> <b(0-255)> <index>` - Set the color with the given index
-- `mincolor`/`mic <index>` - Set the current active colour to the index specified
-- `maxcolor`/`mac <index>` - Set final acitve color index
+- `mincolor`/`mic <index(0-7)>` - Set the current active colour to the index specified
+- `maxcolor`/`mac <index>(0-7)` - Set final acitve color index
 - `fps <value(1-255)>` - Set the target refresh rate. Used to control the speed of animation.

@@ -31,12 +31,12 @@ namespace LEDStripController {
         _commandHandler.AddCommand(new SerialCommand("c", commandFuncs::editColor));
 
         // Current color is aliased to "mincolor" and "mic"
-        _commandHandler.AddCommand(new SerialCommand("mincolor", commandFuncs::switchColor));
-        _commandHandler.AddCommand(new SerialCommand("mic", commandFuncs::switchColor));
+        _commandHandler.AddCommand(new SerialCommand("mincolor", commandFuncs::minColor));
+        _commandHandler.AddCommand(new SerialCommand("mic", commandFuncs::minColor));
 
         // Final color is aliased to "maxcolor" and "mac"
-        _commandHandler.AddCommand(new SerialCommand("maxcolor", commandFuncs::finalColor));
-        _commandHandler.AddCommand(new SerialCommand("mac", commandFuncs::finalColor));
+        _commandHandler.AddCommand(new SerialCommand("maxcolor", commandFuncs::maxColor));
+        _commandHandler.AddCommand(new SerialCommand("mac", commandFuncs::maxColor));
 
         // FPS is not aliased as it can't be shortened further
         _commandHandler.AddCommand(new SerialCommand("fps", commandFuncs::fps));
@@ -171,7 +171,7 @@ namespace LEDStripController {
         }
     }
 
-    void commandFuncs::switchColor(SerialCommands *sender) 
+    void commandFuncs::minColor(SerialCommands *sender) 
     {
         char *input = sender->Next();
         char newVal = atoi(input);
@@ -221,8 +221,17 @@ namespace LEDStripController {
     void commandFuncs::toggle(SerialCommands *sender)
     {
         Controller* c = getController(sender);
-        c->setEnabled(!c->getEnabled());
+        char *arg = sender->Next();
 
+        if (strlen(arg) > 0) {
+            int state = atoi(arg);
+            c->setEnabled((bool)state);
+        } else {
+            // Flip the state if no argument provided
+            c->setEnabled(!c->getEnabled());
+        }
+
+        // Inform the user of current state
         if (c->getEnabled()) {
             sender->GetSerial()->println("ON");
             return;
@@ -235,7 +244,7 @@ namespace LEDStripController {
         sender->GetSerial()->println("https://github.com/randomman552/Led-Strip-Controller");
     }
 
-    void commandFuncs::finalColor(SerialCommands *sender)
+    void commandFuncs::maxColor(SerialCommands *sender)
     {
         char *input = sender->Next();
         int newVal = atoi(input);
