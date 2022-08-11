@@ -19,40 +19,66 @@ namespace LEDStripController {
         static bool reverse = false;
 
         #pragma region Base functions
+        /**
+         * @brief Clear the LED Strip of color
+         * @param C The Controller instance
+         */
         void clear(Controller &C);
 
         /**
          * @brief Basic function to fill the LED strip with a given color
-         * 
          * @param C The Controller instance
          * @param col Color to fill with
          */
         void fill(Controller &C, CRGB col);
 
+        /**
+         * @brief Variant of fill that takes a HSV color
+         * @param C The Controller instance
+         * @param col Color to fill with
+         */
         void fill (Controller &C, CHSV col);
 
         /**
-         * Base fade function used by other fade functions
-         * Used in Color::fade and Random::fade
+         * @brief Basic function to fade a color in and out
+         * @param C The Controller instance
+         * @param col Color to fill with
          */
         void fade(Controller &C, CRGB col);
 
+        /**
+         * @brief Variant of fade that takes a HSV color
+         * @param C The Controller instance
+         * @param col Color to fill with
+         */
         void fade(Controller &C, CHSV col);
 
         /**
-         * Base fillEmpty function used by other fillEmpty functions
-         * Used in Color::fillEmpty and Random::fillEmpty
+         * @brief Basic lighting function that fills the LED strip from one end and empties it to the other.
+         * @param C The Controller instance
+         * @param col Color to fill with
          */
         void fillEmpty(Controller &C, CRGB col);
-       
+
+        /**
+         * @brief Variant of fillEmpty that takes a HSV color
+         * @param C The Controller instance
+         * @param col Color to fill with
+         */
         void fillEmpty(Controller &C, CHSV col);
 
         /**
-         * Base fillEmptyMiddle function used by other fillEmptyMiddle functions
-         * Used in Color::fillEmptyMiddle and Random::fillEmptyMiddle
+         * @brief Basic lighting function that fills the LED strip towards the middle and then empties it
+         * @param C The Controller instance
+         * @param col Color to fill with
          */
         void fillEmptyMiddle(Controller &C, CRGB col);
 
+        /**
+         * @brief Variant of fillEmptyMiddle that takes a HSV color
+         * @param C The Controller instance
+         * @param col Color to fill with
+         */
         void fillEmptyMiddle(Controller &C, CHSV col);
 
         #pragma endregion
