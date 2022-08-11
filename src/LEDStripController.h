@@ -53,8 +53,12 @@ namespace LEDStripController
         void setEffect(uint8_t val);
         void setBrightness(uint8_t val);
         void setEnabled(bool val);
+
         void setColor(CRGB val);
+        void setColor(uint8_t r, uint8_t g, uint8_t b);
         void setColor(CRGB val, int idx);
+        void setColor(uint8_t r, uint8_t g, uint8_t b, int idx);
+        
         void setFps(uint8_t val);
         void setCurrentColorIndex(uint8_t val);
         void setFinalColorIndex(uint8_t val);

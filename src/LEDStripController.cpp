@@ -87,10 +87,20 @@ namespace LEDStripController {
         setColor(val, getCurrentColorIndex());
     }
 
+    void Controller::setColor(uint8_t r, uint8_t g, uint8_t b) {
+        CRGB val(r, g, b);
+        setColor(val);
+    }
+
     void Controller::setColor(CRGB val, int idx) {
         idx = clamp(idx, 0, maxColors - 1);
         idx = Addrs::colors + idx * sizeof(CRGB);
         EEPROM.put<CRGB>(idx, val);
+    }
+
+    void Controller::setColor(uint8_t r, uint8_t g, uint8_t b, int idx) {
+        CRGB val(r, g, b);
+        setColor(val, idx);
     }
 
     void Controller::setFps(uint8_t val) {
