@@ -3,9 +3,9 @@
 #include "src/LEDStripController.h"
 
 #define LED_TYPE WS2812B
-#define DATA_PIN 9
+#define DATA_PIN 8
 #define COLOR_ORDER GRB
-#define NUM_LEDS 144
+#define NUM_LEDS 153
 
 #define BLT_RX 11
 #define BLT_TX 10
@@ -16,7 +16,7 @@ LEDStripController::SerialController ledController(&bltSerial);
 
 void setup()
 {
-    bltSerial.begin(38400);
+    bltSerial.begin(9600);
     FastLED.addLeds<LED_TYPE, DATA_PIN, COLOR_ORDER>(leds, NUM_LEDS);
     ledController.setLEDs(leds, NUM_LEDS);
 }
