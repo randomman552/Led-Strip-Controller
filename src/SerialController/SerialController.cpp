@@ -91,7 +91,7 @@ namespace LEDStripController {
         char *idxInp = sender->Next();
 
         // Get color at specified idx
-        int idx = getController(sender)->getCurColIdx();
+        int idx = getController(sender)->getCurrentColorIndex();
         if (strlen(idxInp) != 0) {
             idx = atoi(idxInp);
             if (idx < 0 || idx >= maxColors) {
@@ -121,7 +121,7 @@ namespace LEDStripController {
     {
         char *idxInp = sender->Next();
 
-        int idx = getController(sender)->getCurColIdx();
+        int idx = getController(sender)->getCurrentColorIndex();
         if (strlen(idxInp) != 0) {
             idx = atoi(idxInp);
             // Check if index is within range
@@ -147,7 +147,7 @@ namespace LEDStripController {
 
         // If no number provided, echo current value
         if (strlen(input) == 0) {
-            sender->GetSerial()->println(getController(sender)->getCurColIdx());
+            sender->GetSerial()->println(getController(sender)->getCurrentColorIndex());
             return;
         }
 
@@ -159,7 +159,7 @@ namespace LEDStripController {
         }
 
         // Update value
-        getController(sender)->setCurColIdx(newVal);
+        getController(sender)->setCurrentColorIndex(newVal);
         // Reset current offset to prevent any out of range errors
         getController(sender)->setOffset(0);
         sender->GetSerial()->println("OK");
@@ -204,7 +204,7 @@ namespace LEDStripController {
         int newVal = atoi(input);
 
         if (strlen(input) == 0) {
-            sender->GetSerial()->println(getController(sender)->getFinColIdx());
+            sender->GetSerial()->println(getController(sender)->getFinalColorIndex());
             return;
         }
 
@@ -213,7 +213,7 @@ namespace LEDStripController {
             sender->GetSerial()->println(maxColors - 1);
             return;
         }
-        getController(sender)->setFinColIdx(newVal);
+        getController(sender)->setFinalColorIndex(newVal);
         getController(sender)->setOffset(0);
         sender->GetSerial()->println("OK");
     }
