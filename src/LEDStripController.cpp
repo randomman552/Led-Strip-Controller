@@ -23,7 +23,7 @@ namespace LEDStripController {
             setEnabled(true);
             setCurrentColorIndex(0);
             setFinalColorIndex(0);
-            setFps(60);
+            setFPS(60);
             EEPROM.update(Addrs::version, version);
 
             // Default all colors to white
@@ -37,7 +37,7 @@ namespace LEDStripController {
 
         // Load saved values
         FastLED.setBrightness(getBrightness());
-        FastLED.setMaxRefreshRate(getFps());
+        FastLED.setMaxRefreshRate(getFPS());
 
         // Setup effects linked list
         effects = LinkedList<void (*)(Controller&)>();
@@ -68,7 +68,7 @@ namespace LEDStripController {
         _leds = leds;
         _numLEDs = numLEDs;
         // Ensure framerate is correct for new leds
-        FastLED.setMaxRefreshRate(getFps());
+        FastLED.setMaxRefreshRate(getFPS());
     }
 
     void Controller::setBrightness(uint8_t val) {
@@ -103,7 +103,7 @@ namespace LEDStripController {
         setColor(val, idx);
     }
 
-    void Controller::setFps(uint8_t val) {
+    void Controller::setFPS(uint8_t val) {
         val = clamp(val, 1, 255);
         EEPROM.update(Addrs::fps, val);
         FastLED.setMaxRefreshRate(val);
@@ -120,7 +120,7 @@ namespace LEDStripController {
         EEPROM.update(Addrs::finalColorIdx, val); 
     }
 
-    void Controller::setOffset(int val) {
+    void Controller::setColorOffset(int val) {
         val = clamp(val, 0, getFinalColorIndex());
         _colOffset = val;
     }
@@ -162,11 +162,11 @@ namespace LEDStripController {
         return color;
     }
 
-    uint8_t Controller::getFps() {
+    uint8_t Controller::getFPS() {
         return EEPROM.read(Addrs::fps);
     }
 
-    int Controller::getColOffset() {
+    int Controller::getColorOffset() {
         return _colOffset;
     }
 

@@ -58,11 +58,11 @@ namespace LEDStripController
         void setColor(uint8_t r, uint8_t g, uint8_t b);
         void setColor(CRGB val, int idx);
         void setColor(uint8_t r, uint8_t g, uint8_t b, int idx);
-        
-        void setFps(uint8_t val);
+
+        void setFPS(uint8_t val);
         void setCurrentColorIndex(uint8_t val);
         void setFinalColorIndex(uint8_t val);
-        void setOffset(int val);
+        void setColorOffset(int val);
 
         #pragma endregion
 
@@ -75,10 +75,10 @@ namespace LEDStripController
         bool getEnabled();
         CRGB getColor();
         CRGB getColor(int idx);
-        uint8_t getFps();
+        uint8_t getFPS();
         uint8_t getCurrentColorIndex();
         uint8_t getFinalColorIndex();
-        int getColOffset();
+        int getColorOffset();
 
         #pragma endregion
 

@@ -78,13 +78,13 @@ namespace LEDStripController {
                 sender->GetSerial()->println("ERROR: Value must be in range 1-255");
                 return;
             }
-            getController(sender)->setFps(val);
+            getController(sender)->setFPS(val);
             sender->GetSerial()->println("OK");
             return;
         }
 
         // When no value specified, show current value
-        sender->GetSerial()->println(getController(sender)->getFps());
+        sender->GetSerial()->println(getController(sender)->getFPS());
     }
 
     void commandFuncs::brightness(SerialCommands *sender) 
@@ -192,7 +192,7 @@ namespace LEDStripController {
         // Update value
         getController(sender)->setCurrentColorIndex(newVal);
         // Reset current offset to prevent any out of range errors
-        getController(sender)->setOffset(0);
+        getController(sender)->setColorOffset(0);
         sender->GetSerial()->println("OK");
     }
 
@@ -251,7 +251,7 @@ namespace LEDStripController {
             return;
         }
         getController(sender)->setFinalColorIndex(newVal);
-        getController(sender)->setOffset(0);
+        getController(sender)->setColorOffset(0);
         sender->GetSerial()->println("OK");
     }
 

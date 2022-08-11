@@ -168,7 +168,7 @@ namespace LEDStripController {
                 int numCols = C.getFinalColorIndex() + 1 - start;
                 CRGB *leds = C.getLEDs();
                 int numLEDs = C.getNumLEDs();
-                int offset = C.getColOffset();
+                int offset = C.getColorOffset();
 
                 for (int i = 0; i < numLEDs; i++)
                 {
