@@ -30,13 +30,13 @@ namespace LEDStripController {
         _commandHandler.AddCommand(new SerialCommand("col", commandFuncs::editColor));
         _commandHandler.AddCommand(new SerialCommand("c", commandFuncs::editColor));
 
-        // Current color is aliased to "currentcol" and "cc"
-        _commandHandler.AddCommand(new SerialCommand("curcol", commandFuncs::switchColor));
-        _commandHandler.AddCommand(new SerialCommand("cc", commandFuncs::switchColor));
+        // Current color is aliased to "mincolor" and "mic"
+        _commandHandler.AddCommand(new SerialCommand("mincolor", commandFuncs::switchColor));
+        _commandHandler.AddCommand(new SerialCommand("mic", commandFuncs::switchColor));
 
-        // Final color is aliased to "finalcol" and "fc"
-        _commandHandler.AddCommand(new SerialCommand("finalcol", commandFuncs::finalColor));
-        _commandHandler.AddCommand(new SerialCommand("fc", commandFuncs::finalColor));
+        // Final color is aliased to "maxcolor" and "mac"
+        _commandHandler.AddCommand(new SerialCommand("maxcolor", commandFuncs::finalColor));
+        _commandHandler.AddCommand(new SerialCommand("mac", commandFuncs::finalColor));
 
         // FPS is not aliased as it can't be shortened further
         _commandHandler.AddCommand(new SerialCommand("fps", commandFuncs::fps));
@@ -178,7 +178,7 @@ namespace LEDStripController {
 
         // If no number provided, echo current value
         if (strlen(input) == 0) {
-            sender->GetSerial()->println(getController(sender)->getCurrentColorIndex());
+            sender->GetSerial()->println(getController(sender)->getMinimumColorIndex());
             return;
         }
 
@@ -190,9 +190,9 @@ namespace LEDStripController {
         }
 
         // Update value
-        getController(sender)->setCurrentColorIndex(newVal);
+        getController(sender)->setMinimumColorIndex(newVal);
         // Reset current offset to prevent any out of range errors
-        getController(sender)->setColorOffset(0);
+        getController(sender)->setColorIndexOffset(0);
         sender->GetSerial()->println("OK");
     }
 
@@ -241,7 +241,7 @@ namespace LEDStripController {
         int newVal = atoi(input);
 
         if (strlen(input) == 0) {
-            sender->GetSerial()->println(getController(sender)->getFinalColorIndex());
+            sender->GetSerial()->println(getController(sender)->getMaximumColorIndex());
             return;
         }
 
@@ -250,8 +250,8 @@ namespace LEDStripController {
             sender->GetSerial()->println(maxColors - 1);
             return;
         }
-        getController(sender)->setFinalColorIndex(newVal);
-        getController(sender)->setColorOffset(0);
+        getController(sender)->setMaximumColorIndex(newVal);
+        getController(sender)->setColorIndexOffset(0);
         sender->GetSerial()->println("OK");
     }
 

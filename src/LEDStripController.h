@@ -115,16 +115,17 @@ namespace LEDStripController
          * @param val new value
          */
         void setFPS(uint8_t val);
+        
         /**
          * @brief Set the Current Color Index (minimum)
          * @param val New value
          */
-        void setCurrentColorIndex(uint8_t val);
+        void setMinimumColorIndex(uint8_t val);
         /**
          * @brief Set the Final Color Index (maximum)
          * @param val New value
          */
-        void setFinalColorIndex(uint8_t val);
+        void setMaximumColorIndex(uint8_t val);
         /**
          * @brief Set the Current Color Offset
          * The Controller supports up to 8 colors to be set at once.
@@ -133,7 +134,7 @@ namespace LEDStripController
          * The Color Offset is the index offset applied from the minimum for which the corresponding color is retrieved.
          * @param val New value
          */
-        void setColorOffset(int val);
+        void setColorIndexOffset(int val);
 
         #pragma endregion
 
@@ -181,22 +182,23 @@ namespace LEDStripController
          * @return uint8_t 
          */
         uint8_t getFPS();
+        
         /**
          * @brief Get the Current Color Index (minimum)
          * @return uint8_t 
          */
-        uint8_t getCurrentColorIndex();
+        uint8_t getMinimumColorIndex();
         /**
          * @brief Get the Final Color Index (maximum)
          * @return uint8_t 
          */
-        uint8_t getFinalColorIndex();
+        uint8_t getMaximumColorIndex();
         /**
          * @brief Get the Color Offset
          * This offset should be applied to the Current Color Index (minimum)
          * @return int 
          */
-        int getColorOffset();
+        int getColorIndexOffset();
 
         #pragma endregion
 

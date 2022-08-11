@@ -21,8 +21,8 @@ namespace LEDStripController {
             setEffect(0);
             setBrightness(64);
             setEnabled(true);
-            setCurrentColorIndex(0);
-            setFinalColorIndex(0);
+            setMinimumColorIndex(0);
+            setMaximumColorIndex(0);
             setFPS(60);
             EEPROM.update(Addrs::version, version);
 
@@ -84,7 +84,7 @@ namespace LEDStripController {
     }
 
     void Controller::setColor(CRGB val) {
-        setColor(val, getCurrentColorIndex());
+        setColor(val, getMinimumColorIndex());
     }
 
     void Controller::setColor(uint8_t r, uint8_t g, uint8_t b) {
@@ -109,19 +109,19 @@ namespace LEDStripController {
         FastLED.setMaxRefreshRate(val);
     }
 
-    void Controller::setCurrentColorIndex(uint8_t val) { 
+    void Controller::setMinimumColorIndex(uint8_t val) { 
         val = clamp(val, 0, maxColors);
-        setFinalColorIndex(val + getFinalColorIndex());
+        setMaximumColorIndex(val + getMaximumColorIndex());
         EEPROM.update(Addrs::currentColorIdx, val);
     }
 
-    void Controller::setFinalColorIndex(uint8_t val) {
-        val = clamp(val, getCurrentColorIndex(), maxColors - 1);
+    void Controller::setMaximumColorIndex(uint8_t val) {
+        val = clamp(val, getMinimumColorIndex(), maxColors - 1);
         EEPROM.update(Addrs::finalColorIdx, val); 
     }
 
-    void Controller::setColorOffset(int val) {
-        val = clamp(val, 0, getFinalColorIndex());
+    void Controller::setColorIndexOffset(int val) {
+        val = clamp(val, 0, getMaximumColorIndex());
         _colOffset = val;
     }
 
@@ -150,7 +150,7 @@ namespace LEDStripController {
     }
 
     CRGB Controller::getColor() { 
-        return getColor(getCurrentColorIndex() + _colOffset);
+        return getColor(getMinimumColorIndex() + _colOffset);
     }
 
     CRGB Controller::getColor(int idx) {
@@ -166,15 +166,15 @@ namespace LEDStripController {
         return EEPROM.read(Addrs::fps);
     }
 
-    int Controller::getColorOffset() {
+    int Controller::getColorIndexOffset() {
         return _colOffset;
     }
 
-    uint8_t Controller::getCurrentColorIndex() {
+    uint8_t Controller::getMinimumColorIndex() {
         return EEPROM.read(Addrs::currentColorIdx);
     }
 
-    uint8_t Controller::getFinalColorIndex() {
+    uint8_t Controller::getMaximumColorIndex() {
         return EEPROM.read(Addrs::finalColorIdx);
     }
 
@@ -195,7 +195,7 @@ namespace LEDStripController {
     void Controller::advanceColor() {
         _colOffset++;
         // Wrap around handling
-        _colOffset = (_colOffset > getFinalColorIndex()) ? 0 : _colOffset;
+        _colOffset = (_colOffset > getMaximumColorIndex()) ? 0 : _colOffset;
 
         // Advance random color as well
         Effects::Random::randomise();

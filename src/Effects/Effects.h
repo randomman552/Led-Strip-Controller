@@ -164,11 +164,11 @@ namespace LEDStripController {
              */
             void alternateFill(Controller &C)
             {
-                int start = C.getCurrentColorIndex();
-                int numCols = C.getFinalColorIndex() + 1 - start;
+                int start = C.getMinimumColorIndex();
+                int numCols = C.getMaximumColorIndex() + 1 - start;
                 CRGB *leds = C.getLEDs();
                 int numLEDs = C.getNumLEDs();
-                int offset = C.getColorOffset();
+                int offset = C.getColorIndexOffset();
 
                 for (int i = 0; i < numLEDs; i++)
                 {
