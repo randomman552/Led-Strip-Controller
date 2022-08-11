@@ -40,21 +40,19 @@ Note: This Controller will not yet do anything, in the setup function you will n
 An example of a program using this library is shown below.\
 I use this for my own bluetooth controlled led strip.
 ```C++
-#define LED_TYPE WS2812B
-#define DATA_PIN 9
-#define COLOR_ORDER GRB
-#define NUM_LEDS 144
+#include "<LEDStripController.h>"
 
-#define BLT_RX 11
-#define BLT_TX 10
+#define LED_TYPE WS2812B
+#define DATA_PIN 8
+#define COLOR_ORDER GRB
+#define NUM_LEDS 60
 
 CRGB leds[NUM_LEDS];
-SoftwareSerial bltSerial(BLT_RX, BLT_TX);
-LEDStripController::SerialController ledController(&bltSerial);
+LEDStripController::SerialController ledController;
 
 void setup()
 {
-    bltSerial.begin(38400);
+    Serial.begin(9600);
     FastLED.addLeds<LED_TYPE, DATA_PIN, COLOR_ORDER>(leds, NUM_LEDS);
     ledController.setLEDs(leds, NUM_LEDS);
 }
@@ -63,10 +61,11 @@ void loop()
 {
     ledController.mainloop();
 }
+
 ```
 
-## Provided lighting functions
-There are 13 lighting functions currently supplied with this library.
+## Lighting functions
+There are 13 lighting functions supplied with this library.
 ### User defined color functions
 - Use the colors defined by the user
 - Will cycle between user defined colors
@@ -89,19 +88,47 @@ There are 13 lighting functions currently supplied with this library.
 11. Random color wipe - Same as color wipe, but with a random color
 12. Random color wipe (center) - Same as above
 
+## Adding your own lighting functions
+You can add your own lighting functions to the Controller instance after creating it.\
+All lighting functions must be of the form shown below:
+```c++
+// This example function fills the LED strip with a single color
+void func(Controller &C) {
+    fill_solid(C.getLEDs(), C.getNumLEDs(), C.getColor());
+}
+```
+
+You can then use the functions provided by FastLED and the Controller class to produce your own custom effects.\
+For examples of these functions, please take a look at [Effects.h](src/Effects/Effects.h).
+
+## Color cycling
+Colors are automatically cycled in the provided lighting functions.\
+This cycle runs automatically between the set minimum color index and maximum color index.
+
+For example the following variables:
+| Variable             | Value     |
+|----------------------|:---------:|
+| Color 0              | 255, 0, 0 |
+| Color 1              | 0, 255, 0 |
+| Color 2              | 0, 0, 255 |
+| Minimum color index  | 0         |
+| Maximuim color index | 2         |
+
+Would result in a cycle of red, green, blue which repeats.\
+The speed of this animation is set by the FPS variable.
+
 ## Commands
 The following commands can be sent over the provided stream to alter the behaviour of SerialController.
 
 - `help`/`?` - Returns URL of this page, where list of commands is provided
-- `toggle`/`t` - Toggle the strip on or off
-- `bright <value(0-255)>` - Set the brightness of the strip
-- `effect <value>` - Set current lighting effect
-- `getcol <index>` - Get the colour at the given index, if none provided get the current colour
-- `col <r(0-255)> <g(0-255)> <b(0-255)> <index>` - Set the colour at the given index, if none provided set current colour
-- `curcol <index>` - Set the current active colour to the index specified
-- `finalcol <index>` - Set final acitve color index
+- `toggle`/`t <state(0,1)>` - Toggle the strip on or off
+- `bright`/`b <value(0-255)>` - Set the brightness of the strip
+- `effect`/`e <value>` - Set current lighting effect
+- `col`/`c <r(0-255)> <g(0-255)> <b(0-255)> <index(0-7)>` - Color interaction CLI, has several forms:
+  - `c` - Get the current color
+  - `c <index>` - Get the color with the given index
+  - `c <r(0-255)> <g(0-255)> <b(0-255)>` - Set the current color
+  - `c <r(0-255)> <g(0-255)> <b(0-255)> <index>` - Set the color with the given index
+- `mincolor`/`mic <index(0-7)>` - Set the current active colour to the index specified
+- `maxcolor`/`mac <index>(0-7)` - Set final acitve color index
 - `fps <value(1-255)>` - Set the target refresh rate. Used to control the speed of animation.
-
-Color will be cycled between the value set with `curcol` and `finalcol`.\
-For example if color0 is red, color1 is green, and color2 is blue:\ 
-sc would be set to 0, and fc would be set to 2. Colours would then cycle between red, green, and blue.

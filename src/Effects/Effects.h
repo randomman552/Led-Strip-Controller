@@ -19,119 +19,67 @@ namespace LEDStripController {
         static bool reverse = false;
 
         #pragma region Base functions
-
-        void clear(Controller &C)
-        {
-            CRGB col(0, 0, 0);
-            fill_solid(C.getLEDs(), C.getNumLEDs(), col);
-        };
+        /**
+         * @brief Clear the LED Strip of color
+         * @param C The Controller instance
+         */
+        void clear(Controller &C);
 
         /**
-         * Base fade function used by other fade functions
-         * Used in Color::fade and Random::fade
+         * @brief Basic function to fill the LED strip with a given color
+         * @param C The Controller instance
+         * @param col Color to fill with
          */
-        void fade(Controller &C, CRGB col)
-        {
-            // Ensure i is within range
-            i = clamp(i, 0, 255);
-
-            col.r = col.r * ((float)i / 255);
-            col.g = col.g * ((float)i / 255);
-            col.b = col.b * ((float)i / 255);
-
-            fill_solid(C.getLEDs(), C.getNumLEDs(), col);
-            
-            // Iterate i depending on reverse boolean
-            if (reverse) i--; else i++;
-
-            // If i has reached a limit, invert reverse and clamp i
-            // Advance to the next color if we have faded out
-            if (i == 255) { 
-                reverse = !reverse;
-            } else if (i == 0) {
-                reverse = !reverse;
-                C.advanceColor();
-            }
-        };
-
-        void fade(Controller &C, CHSV col)
-        {
-            CRGB rgbCol;
-            hsv2rgb_rainbow(col, rgbCol);
-            fade(C, rgbCol);
-        };
+        void fill(Controller &C, CRGB col);
 
         /**
-         * Base fillEmpty function used by other fillEmpty functions
-         * Used in Color::fillEmpty and Random::fillEmpty
+         * @brief Variant of fill that takes a HSV color
+         * @param C The Controller instance
+         * @param col Color to fill with
          */
-        void fillEmpty(Controller &C, CRGB col)
-        {
-            i = clamp(i, 0, C.getNumLEDs() * 2);
-            clear(C);
-
-            int start;
-            int length;
-            //Calculate appropriate start and length depending on whether we are past the max led number
-            if (i > C.getNumLEDs())
-            {
-                start = i - C.getNumLEDs();
-                length = C.getNumLEDs() - (i - C.getNumLEDs());
-            } else {
-                start = 0;
-                length = i;
-            }
-            fill_solid(C.getLEDs() + start, length, col);
-
-            if (reverse) i--; else i++;
-            if (i == C.getNumLEDs() * 2 || i == 0) {
-                reverse = !reverse;
-                // Advance color when reaching end of strip
-                C.advanceColor();
-            }
-        };
-       
-        void fillEmpty(Controller &C, CHSV col)
-        {
-            CRGB rgbCol;
-            hsv2rgb_rainbow(col, rgbCol);
-            fillEmpty(C, rgbCol);
-        };
+        void fill (Controller &C, CHSV col);
 
         /**
-         * Base fillEmptyMiddle function used by other fillEmptyMiddle functions
-         * Used in Color::fillEmptyMiddle and Random::fillEmptyMiddle
+         * @brief Basic function to fade a color in and out
+         * @param C The Controller instance
+         * @param col Color to fill with
          */
-        void fillEmptyMiddle(Controller &C, CRGB col)
-        {
-            i = clamp(i, 0, C.getNumLEDs());
-            clear(C);
+        void fade(Controller &C, CRGB col);
 
-            int mid = C.getNumLEDs() / 2;
+        /**
+         * @brief Variant of fade that takes a HSV color
+         * @param C The Controller instance
+         * @param col Color to fill with
+         */
+        void fade(Controller &C, CHSV col);
 
-            //Fill the led strip appropriately depending on our iteration status
-            if (i > mid) {
-                //Filling from edges
-                fill_solid(C.getLEDs() + i - mid, C.getNumLEDs() - (i - mid) * 2, col);
-            } else {
-                //Emptying to middle
-                fill_solid(C.getLEDs(), i, col);
-                fill_solid(C.getLEDs() + (C.getNumLEDs() - i), i, col);
-            }
-            
-            if (reverse) i--; else i++;
-            if (i == C.getNumLEDs() || i == 0) { 
-                reverse = !reverse;
-                C.advanceColor();
-            }
-        };
+        /**
+         * @brief Basic lighting function that fills the LED strip from one end and empties it to the other.
+         * @param C The Controller instance
+         * @param col Color to fill with
+         */
+        void fillEmpty(Controller &C, CRGB col);
 
-        void fillEmptyMiddle(Controller &C, CHSV col)
-        {
-            CRGB rgbCol;
-            hsv2rgb_rainbow(col, rgbCol);
-            fillEmptyMiddle(C, rgbCol);
-        };
+        /**
+         * @brief Variant of fillEmpty that takes a HSV color
+         * @param C The Controller instance
+         * @param col Color to fill with
+         */
+        void fillEmpty(Controller &C, CHSV col);
+
+        /**
+         * @brief Basic lighting function that fills the LED strip towards the middle and then empties it
+         * @param C The Controller instance
+         * @param col Color to fill with
+         */
+        void fillEmptyMiddle(Controller &C, CRGB col);
+
+        /**
+         * @brief Variant of fillEmptyMiddle that takes a HSV color
+         * @param C The Controller instance
+         * @param col Color to fill with
+         */
+        void fillEmptyMiddle(Controller &C, CHSV col);
 
         #pragma endregion
 
@@ -143,18 +91,7 @@ namespace LEDStripController {
             /**
              * Fill the LED with the current set colour.
              */
-            void fill(Controller &C)
-            {
-                i = clamp(i, 0, 255);
-                fill_solid(C.getLEDs(), C.getNumLEDs(), C.getColor());
-                
-                // Advance color after set duration (255 frames)
-                if (i == 255) {
-                    i = 0;
-                    C.advanceColor();
-                }
-                i++;
-            };
+            void fill(Controller &C);
             
             /**
              * Fill strip with alternating colours
@@ -162,55 +99,22 @@ namespace LEDStripController {
              * Ends at finCol
              * Repeats sequence until strip is filled
              */
-            void alternateFill(Controller &C)
-            {
-                int start = C.getCurColIdx();
-                int numCols = C.getFinColIdx() + 1 - start;
-                CRGB *leds = C.getLEDs();
-                int numLEDs = C.getNumLEDs();
-                int offset = C.getColOffset();
-
-                for (int i = 0; i < numLEDs; i++)
-                {
-                    // Math to work out color alternations
-                    // Modulo operators keep valus within numCols range
-                    // Offset gives the appearance of moving the colors down the led strip 
-                    // (it is incremented when C.advanceColor is called)
-                    // Start is the offset to the start of active colors in colors array
-                    leds[i] = C.getColor(((i % numCols) + offset) % numCols + start);
-                }
-
-                // Advance color after set duration (255 frames)
-                if (i == 255) {
-                    i = 0;
-                    C.advanceColor();
-                }
-                i++;
-            };
+            void alternateFill(Controller &C);
 
             /**
              * Fade the given color in and out
              */
-            void fade(Controller &C)
-            {
-                Effects::fade(C, C.getColor());
-            };
+            void fade(Controller &C);
 
             /**
              * Fill and empty the LED strip from end to end
              */
-            void fillEmpty(Controller &C)
-            {
-                Effects::fillEmpty(C, C.getColor());
-            };
+            void fillEmpty(Controller &C);
 
             /**
              * Fill and empty the LED strip from the end's to the middle
              */
-            void fillEmptyMiddle(Controller &C)
-            {
-                Effects::fillEmptyMiddle(C, C.getColor());
-            };
+            void fillEmptyMiddle(Controller &C);
         } // namespace Color
 
         /**
@@ -223,114 +127,56 @@ namespace LEDStripController {
             /**
              * Fill the LED strip with a rainbow gradient
              */
-            void fill(Controller &C)
-            {
-                fill_rainbow(C.getLEDs(), C.getNumLEDs(), startHue, 255 / C.getNumLEDs());
-            };
+            void fill(Controller &C);
 
             /**
              * Fill and empty the LED strip with a rainbow gradient from end to end
              */
-            void fillEmpty(Controller &C)
-            {
-                i = clamp(i, 0, C.getNumLEDs() * 2);
-                clear(C);
-
-                int start;
-                int length;
-                int hChange = 255 / C.getNumLEDs();
-
-                //Calculate appropriate start and length depending on whether we are past the max led number
-                if (i > C.getNumLEDs())
-                {
-                    start = i - C.getNumLEDs();
-                    length = C.getNumLEDs() - (i - C.getNumLEDs());
-                } else {
-                    start = 0;
-                    length = i;
-                }
-                fill_rainbow(C.getLEDs() + start, length, hChange * start, hChange);
-
-                if (reverse) i--; else i++;
-                if (i == C.getNumLEDs() * 2 || i == 0) reverse = !reverse;
-            };
+            void fillEmpty(Controller &C);
 
             /**
              * Fill the LED strip with a hue.
              * Advance hue by 1 each frame, showly shifting through all colors
              */
-            void cycle(Controller &C)
-            {
-                CHSV hueCol(startHue, 255, 255);
-                fill_solid(C.getLEDs(), C.getNumLEDs(), hueCol);
-
-                //Iterate the hue value once for each function call.
-                //Don't need to use REVERSE_HANDLER here as the hue value will just overflow back round to 0.
-                startHue++;
-            };
+            void cycle(Controller &C);
 
             /**
              * Fill LED strip with rainbow gradient
              * Rotate rainbow gradient by 1 each frame
              */
-            void spinCycle(Controller &C)
-            {
-                //Functions in a similar way to the normal cycle function
-                fill_rainbow(C.getLEDs(), C.getNumLEDs(), startHue, 255 / C.getNumLEDs());
-                startHue++;
-            };
+            void spinCycle(Controller &C);
         } // namespace Rainbow
 
+        /**
+         * @brief Lighting functions using random colors
+         */
         namespace Random
         {
             static CHSV color = CHSV(random8(), 255, 255);
             /**
              * Randomise current Random color
              */
-            void randomise()
-            {
-                color = CHSV(random8(), 255, 255);
-            };
+            void randomise();
 
             /**
              * Fill led strip with random color
              */
-            void fill(Controller &C)
-            {
-                i = clamp(i, 0, 255);
-                fill_solid(C.getLEDs(), C.getNumLEDs(), color);
-                
-                // Advance color after set duration (255 frames)
-                if (i == 255) {
-                    i = 0;
-                    randomise();
-                }
-                i++;
-            };
+            void fill(Controller &C);
 
             /**
              * Fade in random color, then fade it out
              */
-            void fade(Controller &C)
-            {
-                Effects::fade(C, color);
-            };
+            void fade(Controller &C);
 
             /**
              * Fill with random color, then empty
              */
-            void fillEmpty(Controller &C)
-            {
-                Effects::fillEmpty(C, color);
-            };
+            void fillEmpty(Controller &C);
 
             /**
              * Fill with random color from edges, then empty to middle
              */
-            void fillEmptyMiddle(Controller &C)
-            {
-                Effects::fillEmptyMiddle(C, color);
-            };
+            void fillEmptyMiddle(Controller &C);
         } // namespace Random
         
     }; // namespace Effects
