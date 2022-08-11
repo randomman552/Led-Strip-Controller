@@ -3,7 +3,7 @@
 
 #include <FastLED.h>
 
-#include "../LEDStripController.h"
+#include "LEDStripController.h"
 
 
 namespace LEDStripController {

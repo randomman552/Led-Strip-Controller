@@ -220,6 +220,6 @@ namespace LEDStripController
     };
 };
 
-#include "SerialController/SerialController.h"
+#include "SerialController.h"
 
 #endif

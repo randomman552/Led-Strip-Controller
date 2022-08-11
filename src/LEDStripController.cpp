@@ -1,5 +1,5 @@
 #include "LEDStripController.h"
-#include "Effects/Effects.h"
+#include "Effects.h"
 
 namespace LEDStripController {
     int clamp(int val, int min, int max)

@@ -1,10 +1,42 @@
 #ifndef SerialStripController_h
 #define SerialStripController_h
 
-#include "SerialCommands.h"
+#include <SerialCommands.h>
+#include "LEDStripController.h"
 
 
 namespace LEDStripController {
+    class ControllerSerialCommands : public SerialCommands {
+    private:
+        Controller *_parent;
+    public:
+        ControllerSerialCommands(Controller* parent, Stream* serial, char* buffer, int16_t buffer_len, char* term = "\r\n", char* delim = " "):
+        SerialCommands(serial, buffer, buffer_len, term, delim) {
+            _parent = parent;
+        };
+
+        Controller *getParent() {
+            return _parent;
+        };
+    };
+
+    /**
+     * Subclass of Controller that takes arguments over a Serial stream,
+     * Takes a stream as a constructor argument.
+     * If none is provided, will default to the standard Serial stream.
+     */
+    class SerialController : public Controller {
+    private:
+        ControllerSerialCommands _commandHandler;
+        char _commandBuffer[64];
+    public:
+        SerialController(Stream *stream);
+        SerialController();
+        ~SerialController();
+
+        void mainloop();
+    };
+    
     /**
      * Anonymous namespace containing functions and commands for our use of the SerialCommands library.
      * Stored in an anonymous namespace to prevent access from outside this library.
@@ -71,23 +103,6 @@ namespace LEDStripController {
 
         }; // namespace commandFuncs
     }; // namespace
-    
-    /**
-     * Subclass of Controller that takes arguments over a Serial stream,
-     * Takes a stream as a constructor argument.
-     * If none is provided, will default to the standard Serial stream.
-     */
-    class SerialController : public Controller {
-    private:
-        ControllerSerialCommands _commandHandler;
-        char _commandBuffer[64];
-    public:
-        SerialController(Stream *stream);
-        SerialController();
-        ~SerialController();
-
-        void mainloop();
-    };
 };
 
 #endif
