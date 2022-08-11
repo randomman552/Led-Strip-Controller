@@ -81,7 +81,7 @@ namespace LEDStripController {
     class SerialController : public Controller {
     private:
         ControllerSerialCommands _commandHandler;
-        char _commandBuffer[32];
+        char _commandBuffer[64];
     public:
         SerialController(Stream *stream);
         SerialController();
