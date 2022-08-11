@@ -1,7 +1,5 @@
 #include "SerialController.h"
 
-#define arrayLength(array) sizeof(array) / sizeof(array[0])
-
 namespace LEDStripController {
     #pragma region Constructors/destructors
 
@@ -179,9 +177,9 @@ namespace LEDStripController {
         }
 
         // If new value is out of range, display error
-        if (!(newVal <= arrayLength(LEDStripController::lFuncs) - 1 && newVal >= 0)) {
+        if (!(newVal <= getController(sender)->effects.size() - 1 && newVal >= 0)) {
             sender->GetSerial()->print("ERROR: Effect must be in range 0 - ");
-            sender->GetSerial()->println(arrayLength(LEDStripController::lFuncs) - 1);
+            sender->GetSerial()->println(getController(sender)->effects.size() - 1);
             return;
         }
 

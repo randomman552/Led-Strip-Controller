@@ -1,8 +1,6 @@
 #include "LEDStripController.h"
 #include "Effects/Effects.h"
 
-#define arrayLength(array) sizeof(array) / sizeof(array[0])
-
 namespace LEDStripController {
     int clamp(int val, int min, int max)
     {
@@ -40,6 +38,22 @@ namespace LEDStripController {
         // Load saved values
         FastLED.setBrightness(getBrightness());
         FastLED.setMaxRefreshRate(getFps());
+
+        // Setup effects linked list
+        effects = LinkedList<void (*)(Controller&)>();
+        effects.add(Effects::Color::fill);
+        effects.add(Effects::Color::alternateFill);
+        effects.add(Effects::Color::fade);
+        effects.add(Effects::Color::fillEmpty);
+        effects.add(Effects::Color::fillEmptyMiddle);
+        effects.add(Effects::Rainbow::fill);
+        effects.add(Effects::Rainbow::fillEmpty);
+        effects.add(Effects::Rainbow::cycle);
+        effects.add(Effects::Rainbow::spinCycle);
+        effects.add(Effects::Random::fill);
+        effects.add(Effects::Random::fade);
+        effects.add(Effects::Random::fillEmpty);
+        effects.add(Effects::Random::fillEmptyMiddle);
     }
 
     Controller::~Controller()
@@ -57,13 +71,21 @@ namespace LEDStripController {
         FastLED.setMaxRefreshRate(getFps());
     }
 
-    void Controller::setBrightness(uint8_t val) { EEPROM.update(Addrs::brightness, val); FastLED.setBrightness(val); }
+    void Controller::setBrightness(uint8_t val) {
+        EEPROM.update(Addrs::brightness, val); FastLED.setBrightness(val);
+    }
 
-    void Controller::setEffect(uint8_t val) { EEPROM.update(Addrs::effect, clamp(val, 0, arrayLength(LEDStripController::lFuncs) - 1)); }
+    void Controller::setEffect(uint8_t val) {
+        EEPROM.update(Addrs::effect, clamp(val, 0, effects.size() - 1));
+    }
 
-    void Controller::setEnabled(bool val) { EEPROM.update(Addrs::enabled, val); }
+    void Controller::setEnabled(bool val) {
+        EEPROM.update(Addrs::enabled, val);
+    }
 
-    void Controller::setColor(CRGB val) { setColor(val, getCurColIdx()); }
+    void Controller::setColor(CRGB val) {
+        setColor(val, getCurColIdx());
+    }
 
     void Controller::setColor(CRGB val, int idx) {
         idx = clamp(idx, 0, maxColors - 1);
@@ -97,15 +119,25 @@ namespace LEDStripController {
 
     #pragma region Getters
 
-    CRGB* Controller::getLEDs() { return _leds; }
+    CRGB* Controller::getLEDs() {
+        return _leds;
+    }
 
-    int Controller::getNumLEDs() { return _numLEDs; }
+    int Controller::getNumLEDs() {
+        return _numLEDs;
+    }
 
-    uint8_t Controller::getBrightness() { return EEPROM.read(Addrs::brightness); }
+    uint8_t Controller::getBrightness() {
+        return EEPROM.read(Addrs::brightness);
+    }
 
-    uint8_t Controller::getEffect() { return EEPROM.read(Addrs::effect); }
+    uint8_t Controller::getEffect() {
+        return EEPROM.read(Addrs::effect);
+    }
 
-    bool Controller::getEnabled() { return EEPROM.read(Addrs::enabled); }
+    bool Controller::getEnabled() {
+        return EEPROM.read(Addrs::enabled);
+    }
 
     CRGB Controller::getColor() { 
         return getColor(getCurColIdx() + _colOffset);
@@ -120,15 +152,21 @@ namespace LEDStripController {
         return color;
     }
 
-    uint8_t Controller::getFps() { return EEPROM.read(Addrs::fps); }
+    uint8_t Controller::getFps() {
+        return EEPROM.read(Addrs::fps);
+    }
 
     int Controller::getColOffset() {
         return _colOffset;
     }
 
-    uint8_t Controller::getCurColIdx() { return EEPROM.read(Addrs::currentColorIdx); }
+    uint8_t Controller::getCurColIdx() {
+        return EEPROM.read(Addrs::currentColorIdx);
+    }
 
-    uint8_t Controller::getFinColIdx() { return EEPROM.read(Addrs::finalColorIdx); }
+    uint8_t Controller::getFinColIdx() {
+        return EEPROM.read(Addrs::finalColorIdx);
+    }
 
     #pragma endregion
 
@@ -137,9 +175,9 @@ namespace LEDStripController {
     void Controller::mainloop() 
     {
         if (getEnabled()) {
-            LEDStripController::lFuncs[getEffect()](*this);
+            effects[getEffect()](*this);
         } else {
-            LEDStripController::Effects::clear(*this);
+            Effects::clear(*this);
         }
         FastLED.show();
     }
@@ -152,26 +190,6 @@ namespace LEDStripController {
         // Advance random color as well
         Effects::Random::randomise();
     }
-
-    #pragma endregion
-
-    #pragma region Lighting functions array
-
-    void (*lFuncs[])(Controller&) = {
-        Effects::Color::fill,
-        Effects::Color::alternateFill,
-        Effects::Color::fade,
-        Effects::Color::fillEmpty,
-        Effects::Color::fillEmptyMiddle,
-        Effects::Rainbow::fill,
-        Effects::Rainbow::fillEmpty,
-        Effects::Rainbow::cycle,
-        Effects::Rainbow::spinCycle,
-        Effects::Random::fill,
-        Effects::Random::fade,
-        Effects::Random::fillEmpty,
-        Effects::Random::fillEmptyMiddle
-    };
 
     #pragma endregion
 };

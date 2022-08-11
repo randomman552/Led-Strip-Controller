@@ -3,6 +3,7 @@
 
 #include <EEPROM.h>
 #include <FastLED.h>
+#include <LinkedList.h>
 
 namespace LEDStripController
 {
@@ -15,7 +16,7 @@ namespace LEDStripController
      */
     int clamp(int val, int min, int max);
 
-    const int version = 5;
+    const int version = 1;
     const int maxColors = 8;
 
     /**
@@ -41,6 +42,8 @@ namespace LEDStripController
         int _numLEDs;
         int _colOffset;
     public:
+        LinkedList<void (*)(Controller&)> effects;
+
         Controller();
         ~Controller();
 
@@ -91,8 +94,6 @@ namespace LEDStripController
 
         #pragma endregion
     };
-
-    extern void (*lFuncs[13])(Controller&);
 };
 
 #include "SerialController/SerialController.h"
