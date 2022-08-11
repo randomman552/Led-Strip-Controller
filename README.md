@@ -64,8 +64,8 @@ void loop()
 
 ```
 
-## Provided lighting functions
-There are 13 lighting functions currently supplied with this library.
+## Lighting functions
+There are 13 lighting functions supplied with this library.
 ### User defined color functions
 - Use the colors defined by the user
 - Will cycle between user defined colors
@@ -87,6 +87,19 @@ There are 13 lighting functions currently supplied with this library.
 10. Random color fade - Fade a random color in and out
 11. Random color wipe - Same as color wipe, but with a random color
 12. Random color wipe (center) - Same as above
+
+## Adding your own lighting functions
+You can add your own lighting functions to the Controller instance after creating it.\
+All lighting functions must be of the form shown below:
+```c++
+// This example function fills the LED strip with a single color
+void func(Controller &C) {
+    fill_solid(C.getLEDs(), C.getNumLEDs(), C.getColor());
+}
+```
+
+You can then use the functions provided by FastLED and the Controller class to produce your own custom effects.\
+For examples of these functions, please take a look at [Effects.h](src/Effects/Effects.h).
 
 ## Commands
 The following commands can be sent over the provided stream to alter the behaviour of SerialController.
