@@ -40,21 +40,19 @@ Note: This Controller will not yet do anything, in the setup function you will n
 An example of a program using this library is shown below.\
 I use this for my own bluetooth controlled led strip.
 ```C++
-#define LED_TYPE WS2812B
-#define DATA_PIN 9
-#define COLOR_ORDER GRB
-#define NUM_LEDS 144
+#include "<LEDStripController.h>"
 
-#define BLT_RX 11
-#define BLT_TX 10
+#define LED_TYPE WS2812B
+#define DATA_PIN 8
+#define COLOR_ORDER GRB
+#define NUM_LEDS 60
 
 CRGB leds[NUM_LEDS];
-SoftwareSerial bltSerial(BLT_RX, BLT_TX);
-LEDStripController::SerialController ledController(&bltSerial);
+LEDStripController::SerialController ledController;
 
 void setup()
 {
-    bltSerial.begin(38400);
+    Serial.begin(9600);
     FastLED.addLeds<LED_TYPE, DATA_PIN, COLOR_ORDER>(leds, NUM_LEDS);
     ledController.setLEDs(leds, NUM_LEDS);
 }
@@ -63,6 +61,7 @@ void loop()
 {
     ledController.mainloop();
 }
+
 ```
 
 ## Provided lighting functions
