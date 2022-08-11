@@ -94,12 +94,15 @@ The following commands can be sent over the provided stream to alter the behavio
 
 - `help`/`?` - Returns URL of this page, where list of commands is provided
 - `toggle`/`t` - Toggle the strip on or off
-- `bright <value(0-255)>` - Set the brightness of the strip
-- `effect <value>` - Set current lighting effect
-- `getcol <index>` - Get the colour at the given index, if none provided get the current colour
-- `col <r(0-255)> <g(0-255)> <b(0-255)> <index>` - Set the colour at the given index, if none provided set current colour
-- `curcol <index>` - Set the current active colour to the index specified
-- `finalcol <index>` - Set final acitve color index
+- `bright`/`b <value(0-255)>` - Set the brightness of the strip
+- `effect`/`e <value>` - Set current lighting effect
+- `col`/`c <r(0-255)> <g(0-255)> <b(0-255)> <index>` - Color interaction CLI, has several forms:
+  - `c` - Get the current color
+  - `c <index>` - Get the color with the given index
+  - `c <r(0-255)> <g(0-255)> <b(0-255)>` - Set the current color
+  - `c <r(0-255)> <g(0-255)> <b(0-255)> <index>` - Set the color with the given index
+- `curcol`/`cc <index>` - Set the current active colour to the index specified
+- `finalcol`/`fc <index>` - Set final acitve color index
 - `fps <value(1-255)>` - Set the target refresh rate. Used to control the speed of animation.
 
 Color will be cycled between the value set with `curcol` and `finalcol`.\

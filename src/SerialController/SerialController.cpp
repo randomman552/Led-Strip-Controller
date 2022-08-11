@@ -10,18 +10,36 @@ namespace LEDStripController {
         // Setup command handler
         _commandHandler.SetDefaultHandler(commandFuncs::unrecognised);
 
-        _commandHandler.AddCommand(new SerialCommand("toggle", commandFuncs::toggle));
-        _commandHandler.AddCommand(new SerialCommand("t", commandFuncs::toggle));
-        _commandHandler.AddCommand(new SerialCommand("bright", commandFuncs::brightness));
-        _commandHandler.AddCommand(new SerialCommand("effect", commandFuncs::effect));
-        _commandHandler.AddCommand(new SerialCommand("getcol", commandFuncs::getColor));
-        _commandHandler.AddCommand(new SerialCommand("col", commandFuncs::editColor));
-        _commandHandler.AddCommand(new SerialCommand("curcol", commandFuncs::switchColor));
-        _commandHandler.AddCommand(new SerialCommand("finalcol", commandFuncs::finalColor));
-        _commandHandler.AddCommand(new SerialCommand("fps", commandFuncs::fps));
         // Help is aliased to "?" and "help"
         _commandHandler.AddCommand(new SerialCommand("?", commandFuncs::help));
         _commandHandler.AddCommand(new SerialCommand("help", commandFuncs::help));
+
+        // Toggle is aliased to "toggle" and "t"
+        _commandHandler.AddCommand(new SerialCommand("toggle", commandFuncs::toggle));
+        _commandHandler.AddCommand(new SerialCommand("t", commandFuncs::toggle));
+
+        // Brightness is aliased to "bright" and "b"
+        _commandHandler.AddCommand(new SerialCommand("bright", commandFuncs::brightness));
+        _commandHandler.AddCommand(new SerialCommand("b", commandFuncs::brightness));
+
+        // Effect is aliased to "effect" and "e"
+        _commandHandler.AddCommand(new SerialCommand("effect", commandFuncs::effect));
+        _commandHandler.AddCommand(new SerialCommand("e", commandFuncs::effect));
+
+        // Color is aliased to "color" and "c"
+        _commandHandler.AddCommand(new SerialCommand("col", commandFuncs::editColor));
+        _commandHandler.AddCommand(new SerialCommand("c", commandFuncs::editColor));
+
+        // Current color is aliased to "currentcol" and "cc"
+        _commandHandler.AddCommand(new SerialCommand("curcol", commandFuncs::switchColor));
+        _commandHandler.AddCommand(new SerialCommand("cc", commandFuncs::switchColor));
+
+        // Final color is aliased to "finalcol" and "fc"
+        _commandHandler.AddCommand(new SerialCommand("finalcol", commandFuncs::finalColor));
+        _commandHandler.AddCommand(new SerialCommand("fc", commandFuncs::finalColor));
+
+        // FPS is not aliased as it can't be shortened further
+        _commandHandler.AddCommand(new SerialCommand("fps", commandFuncs::fps));
     }
 
     SerialController::SerialController(): SerialController(&Serial) {}
@@ -85,59 +103,72 @@ namespace LEDStripController {
 
     void commandFuncs::editColor(SerialCommands *sender)
     {
-        char *rInp = sender->Next();
-        char *gInp = sender->Next();
-        char *bInp = sender->Next();
-        char *idxInp = sender->Next();
+        char *input1 = sender->Next();
+        char *input2 = sender->Next();
+        char *input3 = sender->Next();
+        char *input4 = sender->Next();
+        Controller* controller = getController(sender);
 
-        // Get color at specified idx
-        int idx = getController(sender)->getCurrentColorIndex();
-        if (strlen(idxInp) != 0) {
-            idx = atoi(idxInp);
-            if (idx < 0 || idx >= maxColors) {
+        // Get number of arguments provided
+        int numArgs = ((strlen(input1) > 0) + (strlen(input2) > 0) + (strlen (input3) > 0) + (strlen(input4) > 0));
+
+        // Define variables
+        uint8_t r, g, b, i;
+
+        
+        switch (numArgs)
+        {
+        case 0:
+            // If no arguments provided, return the current color
+            sender->GetSerial()->print(controller->getColor().r);
+            sender->GetSerial()->print(", ");
+            sender->GetSerial()->print(controller->getColor().g);
+            sender->GetSerial()->print(", ");
+            sender->GetSerial()->println(controller->getColor().b);
+            break;
+
+        case 1:
+            // If one argument provided, return the color at the given position
+            i = atoi(input1);
+            sender->GetSerial()->print(controller->getColor(i).r);
+            sender->GetSerial()->print(", ");
+            sender->GetSerial()->print(controller->getColor(i).g);
+            sender->GetSerial()->print(", ");
+            sender->GetSerial()->println(controller->getColor(i).b);
+            break;
+
+        case 3:
+            // If three arguments provided, we change the current color
+            r = atoi(input1);
+            g = atoi(input2);
+            b = atoi(input3);
+
+            controller->setColor(r, g, b);
+            sender->GetSerial()->println("OK");
+            break;
+
+        case 4:
+            // If four arguments provided, we change the color with the given index
+            r = atoi(input1);
+            g = atoi(input2);
+            b = atoi(input3);
+            i = atoi(input4);
+
+            // Check index bounds
+            if (i < 0 || i >= maxColors) {
                 sender->GetSerial()->print("ERROR: Index must be in range 0 - ");
                 sender->GetSerial()->println(maxColors - 1);
-                return;
+                break;
             }
+
+            controller->setColor(r, g, b, i);
+            sender->GetSerial()->println("OK");
+            break;
+
+        default:
+            sender->GetSerial()->println("ERROR: Invalid number of arguments provided");
+            break;
         }
-        CRGB col = getController(sender)->getColor(idx);
-
-        // Check inputs are valid
-        if (strlen(rInp) == 0 || strlen(gInp) == 0 || strlen(bInp) == 0) {
-            sender->GetSerial()->println("ERROR: Must specify R, G, and B values");
-            return;
-        }
-
-        col.r = atoi(rInp);
-        col.g = atoi(gInp);
-        col.b = atoi(bInp);
-
-        getController(sender)->setColor(col, idx);
-
-        sender->GetSerial()->println("OK");
-    }
-
-    void commandFuncs::getColor(SerialCommands *sender) 
-    {
-        char *idxInp = sender->Next();
-
-        int idx = getController(sender)->getCurrentColorIndex();
-        if (strlen(idxInp) != 0) {
-            idx = atoi(idxInp);
-            // Check if index is within range
-            if (idx < 0 || idx >= maxColors) {
-                sender->GetSerial()->print("ERROR: Index must be in range 0 - ");
-                sender->GetSerial()->println(maxColors - 1);
-                return;
-            }
-        }
-        CRGB curCol = getController(sender)->getColor(idx);
-
-        sender->GetSerial()->print(curCol.r);
-        sender->GetSerial()->print(", ");
-        sender->GetSerial()->print(curCol.g);
-        sender->GetSerial()->print(", ");
-        sender->GetSerial()->println(curCol.b);
     }
 
     void commandFuncs::switchColor(SerialCommands *sender) 
@@ -189,8 +220,14 @@ namespace LEDStripController {
 
     void commandFuncs::toggle(SerialCommands *sender)
     {
-        getController(sender)->setEnabled(!getController(sender)->getEnabled());
-        sender->GetSerial()->println("OK");
+        Controller* c = getController(sender);
+        c->setEnabled(!c->getEnabled());
+
+        if (c->getEnabled()) {
+            sender->GetSerial()->println("ON");
+            return;
+        }
+        sender->GetSerial()->println("OFF");
     }
 
     void commandFuncs::help(SerialCommands *sender) 
