@@ -196,9 +196,6 @@ namespace LEDStripController {
         _colOffset++;
         // Wrap around handling
         _colOffset = (_colOffset > getMaximumColorIndex()) ? 0 : _colOffset;
-
-        // Advance random color as well
-        Effects::Random::randomise();
     }
 
     #pragma endregion
