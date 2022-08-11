@@ -14,6 +14,7 @@ LEDStripController::Addrs::end
 ## Dependencies
 - FastLED - [here](https://www.arduino.cc/reference/en/libraries/fastled/)
 - SerialCommands - [here](https://www.arduino.cc/reference/en/libraries/serialcommands/)
+- LinkedList - [here](https://www.arduino.cc/reference/en/libraries/linkedlist/)
 
 ## Classes
 - Controller
